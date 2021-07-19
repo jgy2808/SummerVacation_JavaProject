@@ -1,2 +1,3 @@
 module ClientThread {
+	requires ClientMain;
 }
