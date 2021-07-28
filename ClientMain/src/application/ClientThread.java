@@ -2,8 +2,10 @@ package application;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
 
 import javafx.application.Platform;
+
 
 public class ClientThread extends Thread {
 	Main mc;
@@ -20,6 +22,7 @@ public class ClientThread extends Thread {
 	public void run() {
 		while (true) {
 			try {
+				mc.socket = new Socket("211.202.61.16", 9999);
 				is = mc.socket.getInputStream();
 				buffer = new byte[512];
 				length = is.read(buffer);
@@ -27,6 +30,7 @@ public class ClientThread extends Thread {
 					throw new IOException();
 				message = new String(buffer, 0, length, "UTF-8");
 				System.out.println(message);
+				// controller 
 //				Platform.runLater(() -> {
 //					// 채팅방 채팅 목록에 뿌려주기
 //					mc.textArea_ChattingRoom.appendText(message);
