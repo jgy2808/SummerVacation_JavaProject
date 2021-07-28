@@ -6,7 +6,9 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import javafx.application.Application;
-import javafx.scene.control.TextArea;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -15,22 +17,10 @@ public class Main extends Application {
 	OutputStream os;
 	InputStream is;
 	
-	TextArea textArea_ChattingRoom;
-
 	// 입장 버튼 눌렀을 때
 	public void openChattingRoom() {
-		Thread thread = new Thread() {
-			public void run() {
-				try {
-					// 서버 PC address
-					socket = new Socket("192.151.24.58", 5000);
-					Thread clientTh = new Thread(cth);
-					clientTh.start();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		};
+		Thread clientTh = new Thread(cth);
+		clientTh.start();
 	}
 
 	// 채팅방에서 나올 때
@@ -62,9 +52,13 @@ public class Main extends Application {
 		};
 	}
 
-	@Override
-	public void start(Stage primaryStage) {
-
+	
+	public void start(Stage primaryStage) throws IOException {
+		Parent root = FXMLLoader.load(getClass().getResource("main1.fxml"));
+		
+		primaryStage.setScene(new Scene(root));
+		primaryStage.setTitle("YSB");
+		primaryStage.show();
 	}
 
 	public static void main(String[] args) {
