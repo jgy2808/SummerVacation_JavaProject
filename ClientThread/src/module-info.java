@@ -1,3 +1,0 @@
-module ClientThread {
-	requires ClientMain;
-}
