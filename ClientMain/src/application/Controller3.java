@@ -38,20 +38,22 @@ public class Controller3 implements Initializable{
 	Label text;
 	Label name;
 	
-	OutputStream os;
 	Socket socket;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		
+
 		try {
+//			socket = (new Controller2()).socket;
+			openChattingRoom();
+			
 			chat_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
 			    @Override
 			    public void handle(KeyEvent t) {
 			    	p = new BorderPane();
 			        if (t.getCode() == KeyCode.ENTER) {
 			        	Label findText = new Label(chat_text.getText().trim() + "      ");
-			        	//SendMessage(findText.getText());
+			        	SendMessage(findText.getText());
 			        	p.setRight(findText);
 			        	chat_text.setText("");
 			        	chat_list.getItems().add(p);
@@ -70,43 +72,72 @@ public class Controller3 implements Initializable{
 	}
 	// 실사용 하지 않는 컨트롤러
 	
-	public void SendMessage(String message) {
+	public void openChattingRoom() {
 		Thread thread = new Thread() {
 			public void run() {
 				try {
-					os = socket.getOutputStream();
-					byte[] buffer = message.getBytes("UTF-8");
-					os.write(buffer);
-					os.flush();
-				} catch (Exception e) {
-					e.printStackTrace();
+//					socket = new Socket("211.202.61.16", 9999);
+					socket = new Socket("127.0.0.1", 9999);
+					
+					ReceiveMessage();
+				} catch(Exception e) {
 					closeChattingRoom();
+					e.printStackTrace();
+					Platform.exit();
 				}
 			}
 		};
 		thread.start();
 	}
-
-//	// 입장 버튼 눌렀을 때
-//	public void openChattingRoom() {
-//		Thread thread = new Thread() {
-//			public void run() {
-//				try {
-//					socket = new Socket("211.202.61.16", 9999);
-//					ReceiveMessage();
-//				} catch(Exception e) {
-//					closeChattingRoom();
-//					e.printStackTrace();
-//				}
-//			}
-//		};
-//	}
+	
+	
+	public void SendMessage(String message) {
+		Thread thread = new Thread() {
+			public void run() {
+				try {
+					OutputStream os = socket.getOutputStream();
+					byte[] buffer = message.getBytes("UTF-8");
+					os.write(buffer);
+					os.flush();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		thread.start();
+	}
+	
+	String[] m = null;
+	public void ReceiveMessage() {
+		while(true) {
+			try {
+				InputStream is = socket.getInputStream();
+				byte[] buffer = new byte[512];
+				int length = is.read(buffer);
+				if (length == -1 ) throw new IOException();
+				String message = new String(buffer, 0, length, "UTF-8");
+				System.out.println(message);
+//				m = message.split("#");
+//				Platform.runLater(()->{
+//					printMessage(m[0], m[1]);
+//				});
+				Platform.runLater(() -> {
+					printMessage("nickname", message);
+				});
+			} catch(Exception e) {
+				System.exit(0);
+				e.printStackTrace();
+				Platform.exit();
+			}
+		}
+	}
 
 	// 채팅방에서 나올 때
 	public void closeChattingRoom() {
 		try {
 			if (socket != null && !socket.isClosed()) {
 				socket.close();
+				System.out.println("socket end");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -115,6 +146,7 @@ public class Controller3 implements Initializable{
 
 	
 	public void printMessage(String name, String text) {
+		p = new BorderPane();
     	u = new BorderPane();
     	d = new BorderPane();
 		this.name = new Label(name);
@@ -128,12 +160,8 @@ public class Controller3 implements Initializable{
 	
 	@FXML
 	public void exit_btn() throws IOException {
-//		FXMLLoader f = new FXMLLoader(getClass().getResource("main1.fxml"));
-//		Parent p = (Parent) f.load();
-//		Stage backStage = new Stage();
-//		backStage.setScene(new Scene(p));
-//		backStage.setTitle("YSB");
-//		backStage.show();
+		
+		closeChattingRoom();
 		
 		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
 		tmp.close();
@@ -144,9 +172,4 @@ public class Controller3 implements Initializable{
 		// 닉네임 변경 버튼
 		System.out.println("잉");
 	}
-	
-	Socket getSocket() {
-		return socket;
-	}
-	
 }
