@@ -2,6 +2,7 @@ package application;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -34,6 +35,7 @@ public class Controller2 implements Initializable{
 	Label passwdLabel;
 	
 	Socket socket;
+	Socket socketRoominfo;
 
 	@FXML
 	private ListView<BorderPane> roomList;
@@ -54,8 +56,8 @@ public class Controller2 implements Initializable{
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
 		try {
-			// 파일에서 방 리스트 가져와서 roomlist에 추가해서 보여주기
-			
+			// 파일에서 방 리스트 가져와서 roomlist에 추가해서 보여주기 -> 파일에 저장은 서버에서 처리
+			//openWaitingRoom();
 			
 			search_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
 
@@ -92,31 +94,38 @@ public class Controller2 implements Initializable{
 	FXMLLoader f;
 	Parent r;
 	Stage stage2;
+	
+	BorderPane pane;
+	BorderPane pane2;
 	@FXML
-	// 방만들기 버튼
+	
+	// ----------------- 방만들기 버튼 -----------------------
 	private void testFunc(ActionEvent event) {
-		BorderPane pane = new BorderPane();
-		BorderPane pane2 = new BorderPane();
+		pane = new BorderPane();
+		pane2 = new BorderPane();
 		String t = title_text.getText();
 		btn = new Button("입장");
 		titleLabel = new Label(t);
 		memberLabel = new Label("최대 인원 아이디는 members_text");
 		passwdLabel = new Label("비번 아이디는 passwd_text");
-				
+		
+		// pane 을 저장
+		// pane 요소들의 text만 따서 파일에 저장
+		// text를 불러와서 요소들 초기화해주고 pane에 저장
+		// pane 개수만큼 반복해서 roomlist에 추가
+		//String roominfo = new String(titleLabel.getText() + "," + memberLabel.getText() + "," + passwdLabel.getText() + "\n");
+		//SendRoominfo(roominfo);
+		
 		pane.setLeft(titleLabel);
 		pane.setCenter(memberLabel);
 		pane2.setLeft(passwdLabel);
 		pane2.setRight(btn);
 		pane.setRight(pane2);
 		
-		// pane 을 저장
-		// pane 요소들의 text만 따서 파일에 저장
-		// text를 불러와서 요소들 초기화해주고 pane에 저장
-		// pane 개수만큼 반복해서 roomlist에 추가
-		
-		
 //		roomList.getItems().add(title_text.getText() + " : " + members_text.getText());
 		roomList.getItems().add(pane);
+		
+		//ReceiveRoominfo();
 		
 		openChattingRoom();
 		
@@ -156,11 +165,75 @@ public class Controller2 implements Initializable{
 			catch(IOException ex) {
 				System.out.println(ex);
 			}
-			
 		});
 	}
 	
+	
+	// ----------------- 대기실 관련 메소드 --------------------------
+	// 대기실 열리자마자 서버와 통신 연결 후 룸 정보 받아서 roomlist에 뿌려주기
+	public void openWaitingRoom() {
+		Thread thread = new Thread() {
+			public void run() {
+				try {
+					socketRoominfo = new Socket("127.0.0.1", 9999);
+					ReceiveRoominfo();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		thread.start();
+	}
+	
+	public void ReceiveRoominfo() {
+		while(true) {
+			try {
+				InputStream is = socketRoominfo.getInputStream();
+				byte[] buffer = new byte[512];
+				int length = is.read(buffer);
+				if (length == -1 ) throw new IOException();
+				String roominfo = new String(buffer, 0, length, "UTF_8");
+				String[] roomArray = roominfo.split("\n");
+				
+				btn = new Button("입장");
+				for (int i = 0; i < roomArray.length; i++) {
+					String[] roominfoArray = roominfo.split(",");
+					titleLabel = new Label(roominfoArray[0]);
+					memberLabel = new Label(roominfoArray[1]);
+					passwdLabel = new Label(roominfoArray[2]);
+					Platform.runLater(() -> {
+						pane.setLeft(titleLabel);
+						pane.setCenter(memberLabel);
+						pane2.setLeft(passwdLabel);
+						pane2.setRight(btn);
+						pane.setRight(pane2);
+					});
+					roomList.getItems().add(pane);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void SendRoominfo(String roominfo) {
+		Thread thread = new Thread() {
+			public void run() {
+				try {
+					OutputStream os = socketRoominfo.getOutputStream();
+					byte[] buffer = roominfo.getBytes("UTF-8");
+					os.write(buffer);
+					os.flush();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		thread.start();
+	}
+	
 
+	// ---------------------- 채팅 관련 메서드 -------------------------
 	Controller3 c3 = new Controller3();
 	public void openChattingRoom() {
 		Thread thread = new Thread() {
