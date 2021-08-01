@@ -47,6 +47,7 @@ public class ConsoleChatServer extends Thread{
 					}
 				}
 				System.out.write(buf,0,count);
+				System.out.println();
 			}
 		}
 		catch(IOException ex) {
