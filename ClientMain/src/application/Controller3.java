@@ -90,7 +90,7 @@ public class Controller3 implements Initializable{
 		thread.start();
 	}
 	
-	
+	// 메세지 보내는 부분
 	public void SendMessage(String message) {
 		Thread thread = new Thread() {
 			public void run() {
