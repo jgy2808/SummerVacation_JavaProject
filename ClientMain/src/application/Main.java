@@ -13,8 +13,26 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 	
+	Socket socketroominfo;
+	
+	public void openWaitingroom() {
+		Thread thread = new Thread() {
+			public void run() {
+				try {
+					socketroominfo = new Socket("127.0.0.1", 8888);
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		thread.start();
+	}
+	
 	public void start(Stage primaryStage) throws IOException {
-		Parent root = FXMLLoader.load(getClass().getResource("main1.fxml"));
+		
+		//openWaitingroom();
+		
+		Parent root = FXMLLoader.load(getClass().getResource("main2.fxml"));
 		
 		primaryStage.setScene(new Scene(root));
 		primaryStage.setTitle("YSB");
@@ -23,5 +41,9 @@ public class Main extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+	
+	public Socket getSocket() {
+		return socketroominfo;
 	}
 }
