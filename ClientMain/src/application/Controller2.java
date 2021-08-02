@@ -35,7 +35,9 @@ public class Controller2 implements Initializable{
 	Label passwdLabel;
 	
 	Socket socket;
-	Socket socketRoominfo;
+	
+	Main main = new Main();
+	Socket socketRoominfo = main.getSocket();
 
 	@FXML
 	private ListView<BorderPane> roomList;
@@ -56,8 +58,8 @@ public class Controller2 implements Initializable{
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
 		try {
-			// 파일에서 방 리스트 가져와서 roomlist에 추가해서 보여주기 -> 파일에 저장은 서버에서 처리
-			//openWaitingRoom();
+			// 서버에 방 리스트 정보 수신을 요청해야함 -> 함수를 실행시켜놓고 있으면 
+			RefreshRoomList();
 			
 			search_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
 
@@ -125,9 +127,12 @@ public class Controller2 implements Initializable{
 //		roomList.getItems().add(title_text.getText() + " : " + members_text.getText());
 		roomList.getItems().add(pane);
 		
-		//ReceiveRoominfo();
 		
-		openChattingRoom();
+		try {
+			openChattingRoom();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		
 		f = new FXMLLoader(getClass().getResource("main2.fxml"));
 		
@@ -148,7 +153,11 @@ public class Controller2 implements Initializable{
 		
 		
 		btn.setOnAction(arg0 -> {
-			openChattingRoom();
+			try {
+				openChattingRoom();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			
 			f = new FXMLLoader(getClass().getResource("main2.fxml"));
 			try {
@@ -170,13 +179,40 @@ public class Controller2 implements Initializable{
 	
 	
 	// ----------------- 대기실 관련 메소드 --------------------------
-	// 대기실 열리자마자 서버와 통신 연결 후 룸 정보 받아서 roomlist에 뿌려주기
-	public void openWaitingRoom() {
+
+	public void RefreshRoomList() {
 		Thread thread = new Thread() {
 			public void run() {
 				try {
-					socketRoominfo = new Socket("127.0.0.1", 9999);
-					ReceiveRoominfo();
+					OutputStream os = socketRoominfo.getOutputStream();
+					String sign = "sign";
+					byte[] refreshSign = sign.getBytes("UTF-8");
+					os.write(refreshSign);
+					os.flush();
+					
+					InputStream is = socketRoominfo.getInputStream();
+					byte[] buffer = new byte[512];
+					int length = is.read(buffer);
+					if (length == -1)
+						throw new IOException();
+					String roominfo = new String(buffer, 0, length, "UTF-8");
+					String[] roomArray = roominfo.split("\n");
+
+					btn = new Button("입장");
+					for (int i = 0; i < roomArray.length; i++) {
+						String[] roomArrayinfo = roomArray[i].split(",");
+						titleLabel = new Label(roomArrayinfo[0]);
+						memberLabel = new Label(roomArrayinfo[1]);
+						passwdLabel = new Label(roomArrayinfo[2]);
+						Platform.runLater(() -> {
+							pane.setLeft(titleLabel);
+							pane.setCenter(memberLabel);
+							pane2.setLeft(passwdLabel);
+							pane2.setRight(btn);
+							pane.setRight(pane2);
+						});
+						roomList.getItems().add(pane);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -184,37 +220,7 @@ public class Controller2 implements Initializable{
 		};
 		thread.start();
 	}
-	
-	public void ReceiveRoominfo() {
-		while(true) {
-			try {
-				InputStream is = socketRoominfo.getInputStream();
-				byte[] buffer = new byte[512];
-				int length = is.read(buffer);
-				if (length == -1 ) throw new IOException();
-				String roominfo = new String(buffer, 0, length, "UTF_8");
-				String[] roomArray = roominfo.split("\n");
-				
-				btn = new Button("입장");
-				for (int i = 0; i < roomArray.length; i++) {
-					String[] roominfoArray = roominfo.split(",");
-					titleLabel = new Label(roominfoArray[0]);
-					memberLabel = new Label(roominfoArray[1]);
-					passwdLabel = new Label(roominfoArray[2]);
-					Platform.runLater(() -> {
-						pane.setLeft(titleLabel);
-						pane.setCenter(memberLabel);
-						pane2.setLeft(passwdLabel);
-						pane2.setRight(btn);
-						pane.setRight(pane2);
-					});
-					roomList.getItems().add(pane);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+
 	
 	public void SendRoominfo(String roominfo) {
 		Thread thread = new Thread() {
@@ -235,7 +241,7 @@ public class Controller2 implements Initializable{
 
 	// ---------------------- 채팅 관련 메서드 -------------------------
 	Controller3 c3 = new Controller3();
-	public void openChattingRoom() {
+	public void openChattingRoom() throws IOException{
 		Thread thread = new Thread() {
 			public void run() {
 				try {
