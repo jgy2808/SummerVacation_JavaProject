@@ -28,11 +28,22 @@ public class Main extends Application {
 		thread.start();
 	}
 	
+	public void closeWindow() {
+		try {
+			if (socketroominfo != null && !socketroominfo.isClosed()) {
+				socketroominfo.close();
+				System.out.println("socketroominfo is closed.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void start(Stage primaryStage) throws IOException {
 		
 		//openWaitingroom();
 		
-		Parent root = FXMLLoader.load(getClass().getResource("main2.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("main1.fxml"));
 		
 		primaryStage.setScene(new Scene(root));
 		primaryStage.setTitle("YSB");
