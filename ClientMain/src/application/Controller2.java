@@ -34,8 +34,8 @@ public class Controller2 implements Initializable{
 	Label memberLabel;
 	Label passwdLabel;
 	
-	Main main = new Main();
-	Socket socketRoominfo = main.getSocket();
+	Socket socketRoominfo;
+	
 
 	@FXML
 	private ListView<BorderPane> roomList;
