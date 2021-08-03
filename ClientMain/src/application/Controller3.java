@@ -134,7 +134,7 @@ public class Controller3 implements Initializable{
 		try {
 			if (socket != null && !socket.isClosed()) {
 				socket.close();
-				System.out.println("socket end");
+				System.out.println("socket is closed.");
 			}
 		} catch (Exception e) {
 			System.out.println("closeChattingRoom error");
