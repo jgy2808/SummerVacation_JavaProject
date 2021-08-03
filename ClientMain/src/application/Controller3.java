@@ -39,7 +39,9 @@ public class Controller3 implements Initializable{
 	Label name;
 	
 	Socket socket;
-	String nick  ; // Controller2에서 TextArea nickname.getText(); 가져오기
+	OutputStream os;
+	InputStream is;
+	String nick = "nickname" ; // Controller2에서 TextArea nickname.getText(); 가져오기
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -53,7 +55,7 @@ public class Controller3 implements Initializable{
 			    	p = new BorderPane();
 			        if (t.getCode() == KeyCode.ENTER) {
 			        	Label findText = new Label(chat_text.getText().trim() + "      ");
-			        	SendMessage("nickname#" + findText.getText());
+			        	SendMessage(nick + "#" + findText.getText());
 			        	p.setRight(findText);
 			        	chat_text.setText("");
 			        	chat_list.getItems().add(p);
@@ -77,6 +79,11 @@ public class Controller3 implements Initializable{
 				try {
 //					socket = new Socket("211.202.61.16", 9999);
 					socket = new Socket("127.0.0.1", 9999);
+					os = socket.getOutputStream();
+					String enterMessage =  nick + "님이 입장하셨습니다.# ";
+					byte[] buffer = enterMessage.getBytes("UTF-8");
+					os.write(buffer);
+					os.flush();
 					
 					ReceiveMessage();
 				} catch(Exception e) {
@@ -94,7 +101,7 @@ public class Controller3 implements Initializable{
 		Thread thread = new Thread() {
 			public void run() {
 				try {
-					OutputStream os = socket.getOutputStream();
+					os = socket.getOutputStream();
 					byte[] buffer = message.getBytes("UTF-8");
 					os.write(buffer);
 					os.flush();
@@ -110,7 +117,7 @@ public class Controller3 implements Initializable{
 	public void ReceiveMessage() {
 		while(true) {
 			try {
-				InputStream is = socket.getInputStream();
+				is = socket.getInputStream();
 				byte[] buffer = new byte[512];
 				int length = is.read(buffer);
 				if (length == -1 ) throw new IOException();
