@@ -29,6 +29,7 @@ public class Main extends Application {
 	}
 	
 	public void closeWindow() {
+		System.out.println("called closeWindow()");
 		try {
 			if (socketroominfo != null && !socketroominfo.isClosed()) {
 				socketroominfo.close();
@@ -45,6 +46,7 @@ public class Main extends Application {
 		
 		Parent root = FXMLLoader.load(getClass().getResource("main1.fxml"));
 		
+		primaryStage.setOnCloseRequest(event -> closeWindow());
 		primaryStage.setScene(new Scene(root));
 		primaryStage.setTitle("YSB");
 		primaryStage.show();
