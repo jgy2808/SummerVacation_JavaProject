@@ -144,7 +144,7 @@ public class Controller2 implements Initializable{
 			System.out.println(ex);
 		}
 		
-		
+		// 입장 버튼
 		btn.setOnAction(arg0 -> {
 			
 			f = new FXMLLoader(getClass().getResource("main2.fxml"));
