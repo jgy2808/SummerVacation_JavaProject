@@ -39,12 +39,12 @@ public class Controller3 implements Initializable{
 	Label name;
 	
 	Socket socket;
+	String nick  ; // Controller2에서 TextArea nickname.getText(); 가져오기
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
 		try {
-//			socket = (new Controller2()).socket;
 			openChattingRoom();
 			
 			chat_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
@@ -53,7 +53,7 @@ public class Controller3 implements Initializable{
 			    	p = new BorderPane();
 			        if (t.getCode() == KeyCode.ENTER) {
 			        	Label findText = new Label(chat_text.getText().trim() + "      ");
-			        	SendMessage(findText.getText());
+			        	SendMessage("nickname#" + findText.getText());
 			        	p.setRight(findText);
 			        	chat_text.setText("");
 			        	chat_list.getItems().add(p);
@@ -65,7 +65,6 @@ public class Controller3 implements Initializable{
 			    }
 			});
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -117,17 +116,15 @@ public class Controller3 implements Initializable{
 				if (length == -1 ) throw new IOException();
 				String message = new String(buffer, 0, length, "UTF-8");
 				System.out.println(message);
-//				m = message.split("#");
-//				Platform.runLater(()->{
-//					printMessage(m[0], m[1]);
-//				});
-				Platform.runLater(() -> {
-					printMessage("nickname", message);
+				m = message.split("#");
+				Platform.runLater(()->{
+					printMessage(m[0], m[1]);
 				});
 			} catch(Exception e) {
-				System.exit(0);
+				closeChattingRoom();
 				e.printStackTrace();
 				Platform.exit();
+				System.exit(0);
 			}
 		}
 	}
@@ -140,6 +137,7 @@ public class Controller3 implements Initializable{
 				System.out.println("socket end");
 			}
 		} catch (Exception e) {
+			System.out.println("closeChattingRoom error");
 			e.printStackTrace();
 		}
 	}
@@ -160,7 +158,6 @@ public class Controller3 implements Initializable{
 	
 	@FXML
 	public void exit_btn() throws IOException {
-		
 		closeChattingRoom();
 		
 		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();

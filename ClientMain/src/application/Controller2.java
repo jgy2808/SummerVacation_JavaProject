@@ -34,8 +34,6 @@ public class Controller2 implements Initializable{
 	Label memberLabel;
 	Label passwdLabel;
 	
-	Socket socket;
-	
 	Main main = new Main();
 	Socket socketRoominfo = main.getSocket();
 
@@ -59,7 +57,7 @@ public class Controller2 implements Initializable{
 		
 		try {
 			// 서버에 방 리스트 정보 수신을 요청해야함 -> 함수를 실행시켜놓고 있으면 
-			RefreshRoomList();
+			//RefreshRoomList();
 			
 			search_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
 
@@ -108,8 +106,8 @@ public class Controller2 implements Initializable{
 		String t = title_text.getText();
 		btn = new Button("입장");
 		titleLabel = new Label(t);
-		memberLabel = new Label("최대 인원 아이디는 members_text");
-		passwdLabel = new Label("비번 아이디는 passwd_text");
+		memberLabel = new Label("members_text");
+		passwdLabel = new Label("passwd_text");
 		
 		// pane 을 저장
 		// pane 요소들의 text만 따서 파일에 저장
@@ -128,11 +126,6 @@ public class Controller2 implements Initializable{
 		roomList.getItems().add(pane);
 		
 		
-		try {
-			openChattingRoom();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 		
 		f = new FXMLLoader(getClass().getResource("main2.fxml"));
 		
@@ -153,11 +146,6 @@ public class Controller2 implements Initializable{
 		
 		
 		btn.setOnAction(arg0 -> {
-			try {
-				openChattingRoom();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 			
 			f = new FXMLLoader(getClass().getResource("main2.fxml"));
 			try {
@@ -237,58 +225,13 @@ public class Controller2 implements Initializable{
 		};
 		thread.start();
 	}
-	
 
-	// ---------------------- 채팅 관련 메서드 -------------------------
-	Controller3 c3 = new Controller3();
-	public void openChattingRoom() throws IOException{
-		Thread thread = new Thread() {
-			public void run() {
-				try {
-//					socket = new Socket("211.202.61.16", 9999);
-					socket = new Socket("127.0.0.1", 9999);
-					
-					ReceiveMessage();
-				} catch(Exception e) {
-					c3.closeChattingRoom();
-					e.printStackTrace();
-					Platform.exit();
-				}
-			}
-		};
-		thread.start();
-	}
-	
-
-	String[] m = null;
-	public void ReceiveMessage() {
-		while(true) {
-			try {
-				InputStream is = socket.getInputStream();
-				byte[] buffer = new byte[512];
-				int length = is.read(buffer);
-				if (length == -1 ) throw new IOException();
-				String message = new String(buffer, 0, length, "UTF-8");
-				System.out.println(message);
-				m = message.split("#");
-				Platform.runLater(()->{
-					c3.printMessage(m[0], m[1]);
-				});
-			} catch(Exception e) {
-				System.exit(0);
-				e.printStackTrace();
-				Platform.exit();
-			}
-		}
-	}
 
 	@FXML
 	public void search_cancel() {
 		roomList.setItems(savedList);
 		checkSearch = 0;
 	}
-
-
 	
 }
 // main1 컨트롤러 달기, 리스트뷰 이름 정하기, 버튼에 함수 달기
