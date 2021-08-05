@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -35,7 +36,6 @@ public class Controller2 implements Initializable{
 	Label passwdLabel;
 	
 	Socket socketRoominfo;
-	
 
 	@FXML
 	private ListView<BorderPane> roomList;
@@ -128,17 +128,12 @@ public class Controller2 implements Initializable{
 		
 		
 		f = new FXMLLoader(getClass().getResource("main2.fxml"));
-		
 		try {
 			r = (Parent) f.load();
 			stage2 = new Stage();
 			stage2.setScene(new Scene(r));
 			stage2.setTitle("YSB2");
-			stage2.show();				// 새로운 창을 여는 코드	
-//			
-//			Stage tmp = (Stage) btn.getScene().getWindow();
-//			tmp.close();		// 해당 두줄은 방입장이 기존 대기실방 닫는 코드
-			
+			stage2.show();
 		}
 		catch(IOException ex) {
 			System.out.println(ex);
@@ -146,7 +141,6 @@ public class Controller2 implements Initializable{
 		
 		// 입장 버튼
 		btn.setOnAction(arg0 -> {
-			
 			f = new FXMLLoader(getClass().getResource("main2.fxml"));
 			try {
 				r = (Parent) f.load();
@@ -157,7 +151,6 @@ public class Controller2 implements Initializable{
 				
 //				Stage tmp = (Stage) btn.getScene().getWindow();
 //				tmp.close();		// 해당 두줄은 방입장이 기존 대기실방 닫는 코드
-				
 			}
 			catch(IOException ex) {
 				System.out.println(ex);
@@ -168,6 +161,22 @@ public class Controller2 implements Initializable{
 	
 	// ----------------- 대기실 관련 메소드 --------------------------
 
+	public void openWaitingRoom() {
+		Thread thread = new Thread() {
+			public void run() {
+				try {
+					if (socketRoominfo == null && !socketRoominfo.isConnected()) {
+						socketRoominfo = new Socket("127.0.0.1", 8888);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					closeWaitingRoom();
+				}
+			}
+		};
+		thread.start();
+	}
+	
 	public void RefreshRoomList() {
 		Thread thread = new Thread() {
 			public void run() {
@@ -184,7 +193,7 @@ public class Controller2 implements Initializable{
 					if (length == -1)
 						throw new IOException();
 					String roominfo = new String(buffer, 0, length, "UTF-8");
-					String[] roomArray = roominfo.split("\n");
+					String[] roomArray = roominfo.split("\n"); // 방 제목, 인원수, 비번, 코드
 
 					btn = new Button("입장");
 					for (int i = 0; i < roomArray.length; i++) {
@@ -203,6 +212,7 @@ public class Controller2 implements Initializable{
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
+					closeWaitingRoom();
 				}
 			}
 		};
@@ -220,18 +230,28 @@ public class Controller2 implements Initializable{
 					os.flush();
 				} catch (Exception e) {
 					e.printStackTrace();
+					closeWaitingRoom();
 				}
 			}
 		};
 		thread.start();
 	}
-
+	
+	public void closeWaitingRoom() {
+		try {
+			if (socketRoominfo != null && !socketRoominfo.isClosed()) {
+				socketRoominfo.close();
+				System.out.println("socketRoominfo end");
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	@FXML
 	public void search_cancel() {
 		roomList.setItems(savedList);
 		checkSearch = 0;
 	}
-	
 }
 // main1 컨트롤러 달기, 리스트뷰 이름 정하기, 버튼에 함수 달기
