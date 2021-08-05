@@ -41,7 +41,7 @@ public class Controller3 implements Initializable{
 	Socket socket;
 	OutputStream os;
 	InputStream is;
-	String nick = "nickname" ; // Controller2에서 TextArea nickname.getText(); 가져오기
+	String nick = "nickname1" ; // Controller2에서 TextArea nickname.getText(); 가져오기
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -68,6 +68,7 @@ public class Controller3 implements Initializable{
 			});
 		} catch (Exception e) {
 			e.printStackTrace();
+			closeChattingRoom();
 		}
 		
 	}
@@ -107,6 +108,7 @@ public class Controller3 implements Initializable{
 					os.flush();
 				} catch (Exception e) {
 					e.printStackTrace();
+					closeChattingRoom();
 				}
 			}
 		};
