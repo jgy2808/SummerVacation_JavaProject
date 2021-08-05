@@ -17,6 +17,7 @@ public class ConsoleChatServer extends Thread{
 		this.sock=sock;
 	}
 	
+	
 	//ArrayList에서 클라이언트 소켓 제거
 	//접속 후 나가버리는 경우 쓸때 오류가 발생
 	public void remove(Socket socket) {
