@@ -44,7 +44,7 @@ public class Main extends Application {
 		
 		//openWaitingroom();
 		
-		Parent root = FXMLLoader.load(getClass().getResource("main1.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("main2.fxml"));
 		
 		primaryStage.setOnCloseRequest(event -> closeWindow());
 		primaryStage.setScene(new Scene(root));
