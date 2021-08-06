@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.Vector;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -39,6 +40,7 @@ public class Controller2 implements Initializable{
 
 	@FXML
 	private ListView<BorderPane> roomList;
+	private Vector<Integer> roomCode;
 	@FXML
 	private TextArea title_text;
 	@FXML
@@ -208,6 +210,7 @@ public class Controller2 implements Initializable{
 							pane2.setRight(btn);
 							pane.setRight(pane2);
 						});
+						roomCode.add(Integer.parseInt(roomArrayinfo[3]));
 						roomList.getItems().add(pane);
 					}
 				} catch (Exception e) {
