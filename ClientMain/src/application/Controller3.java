@@ -67,15 +67,16 @@ public class Controller3 implements Initializable{
 			    }
 			});
 		} catch (Exception e) {
+			System.out.println("initialize exception");
 			e.printStackTrace();
 			closeChattingRoom();
 		}
 		
 	}
 	// 실사용 하지 않는 컨트롤러
-	
+	Thread thread;
 	public void openChattingRoom() {
-		Thread thread = new Thread() {
+		thread = new Thread() {
 			public void run() {
 				try {
 //					socket = new Socket("211.202.61.16", 9999);
@@ -88,6 +89,7 @@ public class Controller3 implements Initializable{
 					
 					ReceiveMessage();
 				} catch(Exception e) {
+					System.out.println("openChattingRoom exception");
 					closeChattingRoom();
 					e.printStackTrace();
 					Platform.exit();
@@ -107,6 +109,7 @@ public class Controller3 implements Initializable{
 					os.write(buffer);
 					os.flush();
 				} catch (Exception e) {
+					System.out.println("SendMessage exception");
 					e.printStackTrace();
 					closeChattingRoom();
 				}
@@ -130,7 +133,7 @@ public class Controller3 implements Initializable{
 					printMessage(m[0], m[1]);
 				});
 			} catch(Exception e) {
-				closeChattingRoom();
+				System.out.println("ReceiveMessage exception");
 				e.printStackTrace();
 				Platform.exit();
 				System.exit(0);
@@ -146,7 +149,7 @@ public class Controller3 implements Initializable{
 				System.out.println("socket is closed.");
 			}
 		} catch (Exception e) {
-			System.out.println("closeChattingRoom error");
+			System.out.println("closeChattingRoom exception");
 			e.printStackTrace();
 		}
 	}
@@ -167,7 +170,10 @@ public class Controller3 implements Initializable{
 	
 	@FXML
 	public void exit_btn() throws IOException {
+		thread.interrupt();
 		closeChattingRoom();
+		Platform.exit();
+		System.exit(0);
 		
 		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
 		tmp.close();
