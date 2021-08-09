@@ -12,7 +12,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-	
 	Socket socketroominfo;
 	
 	public void openWaitingroom() {

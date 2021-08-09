@@ -24,7 +24,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class Controller3 implements Initializable{
-
 	@FXML
 	private Button exitBtnComponent;
 	@FXML

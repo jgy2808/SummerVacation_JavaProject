@@ -30,7 +30,6 @@ import javafx.stage.Stage;
 
 
 public class Controller2 implements Initializable{
-	
 	Button btn;
 	Label titleLabel;
 	Label memberLabel;
@@ -115,7 +114,7 @@ public class Controller2 implements Initializable{
 		// pane 요소들의 text만 따서 파일에 저장
 		// text를 불러와서 요소들 초기화해주고 pane에 저장
 		// pane 개수만큼 반복해서 roomlist에 추가
-		//String roominfo = new String(titleLabel.getText() + "," + memberLabel.getText() + "," + passwdLabel.getText() + "\n");
+		//String roominfo = new String(titleLabel.getText() + "," + memberLabel.getText() + "," + passwdLabel.getText() + "0" + "\n");
 		//SendRoominfo(roominfo);
 		
 		pane.setLeft(titleLabel);
@@ -203,6 +202,7 @@ public class Controller2 implements Initializable{
 						titleLabel = new Label(roomArrayinfo[0]);
 						memberLabel = new Label(roomArrayinfo[1]);
 						passwdLabel = new Label(roomArrayinfo[2]);
+						btn.setId(roomArrayinfo[3]);
 						Platform.runLater(() -> {
 							pane.setLeft(titleLabel);
 							pane.setCenter(memberLabel);
@@ -210,7 +210,7 @@ public class Controller2 implements Initializable{
 							pane2.setRight(btn);
 							pane.setRight(pane2);
 						});
-						roomCode.add(Integer.parseInt(roomArrayinfo[3]));
+//						roomCode.add(Integer.parseInt(roomArrayinfo[3]));
 						roomList.getItems().add(pane);
 					}
 				} catch (Exception e) {
