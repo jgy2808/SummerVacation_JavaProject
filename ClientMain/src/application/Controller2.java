@@ -30,13 +30,15 @@ import javafx.stage.Stage;
 
 
 public class Controller2 implements Initializable{
-	Button btn;
+	//Button btn;
 	Label titleLabel;
-	Label memberLabel;
-	Label passwdLabel;
-	
+	Label roomMasterLabel;
+	Label memberCountLabel;
+	OutputStream os;
+	InputStream is;
 	Socket socketRoominfo;
 
+	int cnt = 0;
 	@FXML
 	private ListView<BorderPane> roomList;
 	private Vector<Integer> roomCode;
@@ -48,6 +50,12 @@ public class Controller2 implements Initializable{
 	private TextArea passwd_text;
 	@FXML
 	private TextArea search_text;
+	@FXML
+	static public TextArea nick_text = null;
+	@FXML
+	private Button createbtn;
+	
+	Main scene = new Main();
 	
 
 	ObservableList<BorderPane> savedList = FXCollections.observableArrayList();
@@ -99,50 +107,44 @@ public class Controller2 implements Initializable{
 	BorderPane pane;
 	BorderPane pane2;
 	@FXML
-	
+
 	// ----------------- 방만들기 버튼 -----------------------
 	private void testFunc(ActionEvent event) {
+		//String roominfo = new String(title_text.getText() + "," + roomMasterLabel.getText() + "," + memberCountLabel.getText() + "\n");
+		//SendRoominfo(roominfo);
+//		RefreshRoomList();
 		pane = new BorderPane();
 		pane2 = new BorderPane();
 		String t = title_text.getText();
-		btn = new Button("입장");
-		titleLabel = new Label(t);
-		memberLabel = new Label("members_text");
-		passwdLabel = new Label("passwd_text");
+		Button btn = new Button("입장");
+		titleLabel = new Label(t + " : " + btn.getId());
+		roomMasterLabel = new Label("room master");
+		memberCountLabel = new Label("1/8");
 		
 		// pane 을 저장
 		// pane 요소들의 text만 따서 파일에 저장
 		// text를 불러와서 요소들 초기화해주고 pane에 저장
 		// pane 개수만큼 반복해서 roomlist에 추가
-		//String roominfo = new String(titleLabel.getText() + "," + memberLabel.getText() + "," + passwdLabel.getText() + "0" + "\n");
-		//SendRoominfo(roominfo);
+		
 		
 		pane.setLeft(titleLabel);
-		pane.setCenter(memberLabel);
-		pane2.setLeft(passwdLabel);
+		pane.setCenter(roomMasterLabel);
+		pane2.setLeft(memberCountLabel);
 		pane2.setRight(btn);
 		pane.setRight(pane2);
 		
-//		roomList.getItems().add(title_text.getText() + " : " + members_text.getText());
 		roomList.getItems().add(pane);
+//		roomList.getItems().add(title_text.getText() + " : " + members_text.getText());
 		
+		Stage stage = (Stage) createbtn.getScene().getWindow();
+		scene.chattingScene(stage);
 		
-		
-		f = new FXMLLoader(getClass().getResource("main2.fxml"));
-		try {
-			r = (Parent) f.load();
-			stage2 = new Stage();
-			stage2.setScene(new Scene(r));
-			stage2.setTitle("YSB2");
-			stage2.show();
-		}
-		catch(IOException ex) {
-			System.out.println(ex);
-		}
 		
 		// 입장 버튼
 		btn.setOnAction(arg0 -> {
-			f = new FXMLLoader(getClass().getResource("main2.fxml"));
+			search_text.setText(btn.getId());
+//			
+			f = new FXMLLoader(getClass().getResource("main1.fxml"));
 			try {
 				r = (Parent) f.load();
 				stage2 = new Stage();
@@ -155,10 +157,10 @@ public class Controller2 implements Initializable{
 			}
 			catch(IOException ex) {
 				System.out.println(ex);
+				ex.printStackTrace();
 			}
 		});
 	}
-	
 	
 	// ----------------- 대기실 관련 메소드 --------------------------
 
@@ -182,13 +184,13 @@ public class Controller2 implements Initializable{
 		Thread thread = new Thread() {
 			public void run() {
 				try {
-					OutputStream os = socketRoominfo.getOutputStream();
-					String sign = "sign";
+					os = socketRoominfo.getOutputStream();
+					String sign = "Refresh";
 					byte[] refreshSign = sign.getBytes("UTF-8");
 					os.write(refreshSign);
 					os.flush();
 					
-					InputStream is = socketRoominfo.getInputStream();
+					is = socketRoominfo.getInputStream();
 					byte[] buffer = new byte[512];
 					int length = is.read(buffer);
 					if (length == -1)
@@ -196,22 +198,30 @@ public class Controller2 implements Initializable{
 					String roominfo = new String(buffer, 0, length, "UTF-8");
 					String[] roomArray = roominfo.split("\n"); // 방 제목, 인원수, 비번, 코드
 
-					btn = new Button("입장");
 					for (int i = 0; i < roomArray.length; i++) {
 						String[] roomArrayinfo = roomArray[i].split(",");
 						titleLabel = new Label(roomArrayinfo[0]);
-						memberLabel = new Label(roomArrayinfo[1]);
-						passwdLabel = new Label(roomArrayinfo[2]);
+						roomMasterLabel = new Label(roomArrayinfo[1]);
+						memberCountLabel = new Label(roomArrayinfo[2]);
+						
+						Button btn = new Button("입장");
 						btn.setId(roomArrayinfo[3]);
+
+						pane.setLeft(titleLabel);
+						pane.setCenter(roomMasterLabel);
+						pane2.setLeft(memberCountLabel);
+						pane2.setRight(btn);
+						pane.setRight(pane2);
+						
 						Platform.runLater(() -> {
-							pane.setLeft(titleLabel);
-							pane.setCenter(memberLabel);
-							pane2.setLeft(passwdLabel);
-							pane2.setRight(btn);
-							pane.setRight(pane2);
+							roomList.getItems().add(pane);
 						});
-//						roomCode.add(Integer.parseInt(roomArrayinfo[3]));
-						roomList.getItems().add(pane);
+						btn.setOnAction(event -> {
+							SendRoominfo(btn.getId());
+							// 채팅씬 열어주기 지금은 대기방 열리기로 되어있음
+							Stage stage = (Stage) createbtn.getScene().getWindow();
+							scene.chattingScene(stage);
+						});
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -227,7 +237,7 @@ public class Controller2 implements Initializable{
 		Thread thread = new Thread() {
 			public void run() {
 				try {
-					OutputStream os = socketRoominfo.getOutputStream();
+					os = socketRoominfo.getOutputStream();
 					byte[] buffer = roominfo.getBytes("UTF-8");
 					os.write(buffer);
 					os.flush();
