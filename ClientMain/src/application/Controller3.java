@@ -40,11 +40,10 @@ public class Controller3 implements Initializable{
 	Socket socket;
 	OutputStream os;
 	InputStream is;
-	String nick = "nickname1" ; // Controller2에서 TextArea nickname.getText(); 가져오기
+	String nick = (Controller2.nick_text).getText();
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-
 		try {
 			openChattingRoom();
 			
@@ -142,6 +141,7 @@ public class Controller3 implements Initializable{
 
 	// 채팅방에서 나올 때
 	public void closeChattingRoom() {
+		thread.interrupt();
 		try {
 			if (socket != null && !socket.isClosed()) {
 				socket.close();
@@ -169,10 +169,7 @@ public class Controller3 implements Initializable{
 	
 	@FXML
 	public void exit_btn() throws IOException {
-		thread.interrupt();
 		closeChattingRoom();
-		Platform.exit();
-		System.exit(0);
 		
 		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
 		tmp.close();
