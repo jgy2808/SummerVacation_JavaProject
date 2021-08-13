@@ -40,7 +40,7 @@ public class Controller3 implements Initializable{
 	Socket socket;
 	OutputStream os;
 	InputStream is;
-	String nick = (Controller2.nick_text).getText();
+	String nick = "nickname"; //(Controller2.nick_text).getText();
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
