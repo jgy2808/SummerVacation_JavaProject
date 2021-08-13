@@ -51,7 +51,7 @@ public class Controller2 implements Initializable{
 	@FXML
 	private TextArea search_text;
 	@FXML
-	static public TextArea nick_text;
+	public TextArea nick_text;
 	@FXML
 	private Button createbtn;
 	
@@ -119,32 +119,33 @@ public class Controller2 implements Initializable{
 ////////////////		Stage stage = (Stage) createbtn.getScene().getWindow();
 ////////////////		scene.chattingScene(stage);
 		
-//		pane2 = new BorderPane();
-//		String t = title_text.getText();
-//		Button btn = new Button("입장");
-//		btn.setId(Integer.toString(cnt++));
-//		titleLabel = new Label(t + " : " + btn.getId());
-//		try {
-//			roomMasterLabel = new Label(nick_text.getText());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		memberCountLabel = new Label("1/8");	
+		pane = new BorderPane();
+		pane2 = new BorderPane();
+		String t = title_text.getText();
+		Button btn = new Button("입장");
+		btn.setId(Integer.toString(cnt++));
+		titleLabel = new Label(t + " : " + btn.getId());
+		try {
+			roomMasterLabel = new Label(nick_text.getText());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		memberCountLabel = new Label("1/8");	
 		
-//		pane.setLeft(titleLabel);
-//		pane.setCenter(roomMasterLabel);
-//		pane2.setLeft(memberCountLabel);
-//		pane2.setRight(btn);
-//		pane.setRight(pane2);
-//		
-//		roomList.getItems().add(pane);
+		pane.setLeft(titleLabel);
+		pane.setCenter(roomMasterLabel);
+		pane2.setLeft(memberCountLabel);
+		pane2.setRight(btn);
+		pane.setRight(pane2);
+		
+		roomList.getItems().add(pane);
 //		roomList.getItems().add(title_text.getText() + " : " + members_text.getText());
 		
 		
 		
 		// 입장 버튼
-//		btn.setOnAction(arg0 -> {
-//			search_text.setText(btn.getId());
+		btn.setOnAction(arg0 -> {
+			search_text.setText(btn.getId());
 //			
 //			f = new FXMLLoader(getClass().getResource("main1.fxml"));
 //			try {
@@ -161,7 +162,7 @@ public class Controller2 implements Initializable{
 //				System.out.println(ex);
 //				ex.printStackTrace();
 //			}
-//		});
+		});
 	}
 	
 	// ----------------- 대기실 관련 메소드 --------------------------
@@ -170,12 +171,13 @@ public class Controller2 implements Initializable{
 		try {
 			if (socketRoominfo == null && !socketRoominfo.isConnected()) {
 				socketRoominfo = new Socket("127.0.0.1", 8888);
+				System.out.println("[ 대기실 socket 연결 성공 ]");
 			}
 		} catch (Exception e) {
+			System.out.println("[ 대기실 socket 연결 실패 ]");
 			e.printStackTrace();
 			closeWaitingRoom();
 		}
-		System.out.println("[ 대기실 socket 연결 성공 ]");
 	}
 	
 	public void RefreshRoomList() {
@@ -215,10 +217,10 @@ public class Controller2 implements Initializable{
 							roomList.getItems().add(pane);
 						});
 						btn.setOnAction(event -> {
-							SendRoominfo(btn.getId());
+//							SendRoominfo(btn.getId());
 							// 채팅씬 열어주기 지금은 대기방 열리기로 되어있음
-							Stage stage = (Stage) createbtn.getScene().getWindow();
-							scene.chattingScene(stage);
+//							Stage stage = (Stage) createbtn.getScene().getWindow();
+//							scene.chattingScene(stage);
 						});
 					}
 				} catch (Exception e) {
