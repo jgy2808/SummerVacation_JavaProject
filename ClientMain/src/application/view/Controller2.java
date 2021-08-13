@@ -41,7 +41,6 @@ public class Controller2 implements Initializable{
 	int cnt = 0;
 	@FXML
 	private ListView<BorderPane> roomList;
-	private Vector<Integer> roomCode;
 	@FXML
 	private TextArea title_text;
 	@FXML
