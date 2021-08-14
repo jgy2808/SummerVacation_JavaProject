@@ -65,7 +65,7 @@ public class Controller2 implements Initializable{
 		
 		try {
 			// 서버에 방 리스트 정보 수신을 요청해야함 -> 함수를 실행시켜놓고 있으면 
-			//openWaitingRoom();
+			openWaitingRoom();
 			//RefreshRoomList();
 			
 			search_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
@@ -112,11 +112,11 @@ public class Controller2 implements Initializable{
 	private void testFunc(ActionEvent event) {
 		// 방만들기 버튼은 서버에 방 만들어진 방 정보 보내주고 chat scene만 띄어주는 역할
 		// 대기실에 room list띄워주는건 initialize나 refresh 버튼
-////////////////		String roominfo = new String(title_text.getText() + "," + roomMasterLabel.getText() + "," + memberCountLabel.getText() + "\n");
-////////////////		SendRoominfo(roominfo);
+		String roominfo = new String("new");
+		SendRoominfo(roominfo);
 
-////////////////		Stage stage = (Stage) createbtn.getScene().getWindow();
-////////////////		scene.chattingScene(stage);
+//		Stage stage = (Stage) createbtn.getScene().getWindow();
+//		scene.chattingScene(stage);
 		
 		pane = new BorderPane();
 		pane2 = new BorderPane();
@@ -144,7 +144,10 @@ public class Controller2 implements Initializable{
 		
 		// 입장 버튼
 		btn.setOnAction(arg0 -> {
-			search_text.setText(btn.getId());
+//			search_text.setText(btn.getId());
+			SendRoominfo(btn.getId());
+			Stage stage = (Stage) createbtn.getScene().getWindow();
+			scene.chattingScene(stage);
 //			
 //			f = new FXMLLoader(getClass().getResource("main1.fxml"));
 //			try {
@@ -168,10 +171,8 @@ public class Controller2 implements Initializable{
 
 	public void openWaitingRoom() {
 		try {
-			if (socketRoominfo == null && !socketRoominfo.isConnected()) {
-				socketRoominfo = new Socket("127.0.0.1", 8888);
-				System.out.println("[ 대기실 socket 연결 성공 ]");
-			}
+			socketRoominfo = new Socket("127.0.0.1", 8888);
+			System.out.println("[ 대기실 socket 연결 성공 ]");
 		} catch (Exception e) {
 			System.out.println("[ 대기실 socket 연결 실패 ]");
 			e.printStackTrace();
