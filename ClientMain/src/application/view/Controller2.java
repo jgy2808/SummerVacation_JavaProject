@@ -55,7 +55,7 @@ public class Controller2 implements Initializable{
 	private Button createbtn;
 	
 	Main scene = new Main();
-	
+	Stage stage;
 
 	ObservableList<BorderPane> savedList = FXCollections.observableArrayList();
 	int checkSearch = 0;
@@ -65,7 +65,7 @@ public class Controller2 implements Initializable{
 		
 		try {
 			// 서버에 방 리스트 정보 수신을 요청해야함 -> 함수를 실행시켜놓고 있으면 
-			//openWaitingRoom();
+			openWaitingRoom();
 			//RefreshRoomList();
 			
 			search_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
@@ -112,11 +112,10 @@ public class Controller2 implements Initializable{
 	private void testFunc(ActionEvent event) {
 		// 방만들기 버튼은 서버에 방 만들어진 방 정보 보내주고 chat scene만 띄어주는 역할
 		// 대기실에 room list띄워주는건 initialize나 refresh 버튼
-////////////////		String roominfo = new String(title_text.getText() + "," + roomMasterLabel.getText() + "," + memberCountLabel.getText() + "\n");
-////////////////		SendRoominfo(roominfo);
+		SendRoominfo("new");
 
-////////////////		Stage stage = (Stage) createbtn.getScene().getWindow();
-////////////////		scene.chattingScene(stage);
+		stage = (Stage) createbtn.getScene().getWindow();
+		scene.chattingScene(stage);
 		
 		pane = new BorderPane();
 		pane2 = new BorderPane();
@@ -144,23 +143,9 @@ public class Controller2 implements Initializable{
 		
 		// 입장 버튼
 		btn.setOnAction(arg0 -> {
-			search_text.setText(btn.getId());
-//			
-//			f = new FXMLLoader(getClass().getResource("main1.fxml"));
-//			try {
-//				r = (Parent) f.load();
-//				stage2 = new Stage();
-//				stage2.setScene(new Scene(r));
-//				stage2.setTitle("YSB2");
-//				stage2.show();				// 새로운 창을 여는 코드	
-//				
-////				Stage tmp = (Stage) btn.getScene().getWindow();
-////				tmp.close();		// 해당 두줄은 방입장이 기존 대기실방 닫는 코드
-//			}
-//			catch(IOException ex) {
-//				System.out.println(ex);
-//				ex.printStackTrace();
-//			}
+			SendRoominfo(btn.getId());
+			stage = (Stage) createbtn.getScene().getWindow();
+			scene.chattingScene(stage);
 		});
 	}
 	
@@ -168,10 +153,8 @@ public class Controller2 implements Initializable{
 
 	public void openWaitingRoom() {
 		try {
-			if (socketRoominfo == null && !socketRoominfo.isConnected()) {
-				socketRoominfo = new Socket("127.0.0.1", 8888);
-				System.out.println("[ 대기실 socket 연결 성공 ]");
-			}
+			socketRoominfo = new Socket("127.0.0.1", 8888);
+			System.out.println("[ 대기실 socket 연결 성공 ]");
 		} catch (Exception e) {
 			System.out.println("[ 대기실 socket 연결 실패 ]");
 			e.printStackTrace();
@@ -233,20 +216,15 @@ public class Controller2 implements Initializable{
 
 	
 	public void SendRoominfo(String roominfo) {
-		Thread thread = new Thread() {
-			public void run() {
-				try {
-					os = socketRoominfo.getOutputStream();
-					byte[] buffer = roominfo.getBytes("UTF-8");
-					os.write(buffer);
-					os.flush();
-				} catch (Exception e) {
-					e.printStackTrace();
-					closeWaitingRoom();
-				}
-			}
-		};
-		thread.start();
+		try {
+			os = socketRoominfo.getOutputStream();
+			byte[] buffer = roominfo.getBytes("UTF-8");
+			os.write(buffer);
+			os.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+			closeWaitingRoom();
+		}
 	}
 	
 	public void closeWaitingRoom() {
