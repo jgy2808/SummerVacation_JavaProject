@@ -97,6 +97,28 @@ public class Controller3 implements Initializable{
 		thread.start();
 	}
 	
+	String[] m = null;
+	public void ReceiveMessage() {
+		while(true) {
+			try {
+				is = socket.getInputStream();
+				byte[] buffer = new byte[512];
+				int length = is.read(buffer);
+				if (length == -1 ) throw new IOException();
+				String message = new String(buffer, 0, length, "UTF-8");
+				System.out.println(message);
+				m = message.split("#");
+				Platform.runLater(()->{
+					printMessage(m[0], m[1]);
+				});
+			} catch(Exception e) {
+				System.out.println("ReceiveMessage exception");
+				e.printStackTrace();
+				break;
+			}
+		}
+	}
+	
 	// 메세지 보내는 부분
 	public void SendMessage(String message) {
 		Thread thread = new Thread() {
@@ -115,33 +137,9 @@ public class Controller3 implements Initializable{
 		};
 		thread.start();
 	}
-	
-	String[] m = null;
-	public void ReceiveMessage() {
-		while(true) {
-			try {
-				is = socket.getInputStream();
-				byte[] buffer = new byte[512];
-				int length = is.read(buffer);
-				if (length == -1 ) throw new IOException();
-				String message = new String(buffer, 0, length, "UTF-8");
-				System.out.println(message);
-				m = message.split("#");
-				Platform.runLater(()->{
-					printMessage(m[0], m[1]);
-				});
-			} catch(Exception e) {
-				System.out.println("ReceiveMessage exception");
-				e.printStackTrace();
-				Platform.exit();
-				System.exit(0);
-			}
-		}
-	}
 
 	// 채팅방에서 나올 때
 	public void closeChattingRoom() {
-		thread.interrupt();
 		try {
 			if (socket != null && !socket.isClosed()) {
 				socket.close();
@@ -170,7 +168,7 @@ public class Controller3 implements Initializable{
 	@FXML
 	public void exit_btn() throws IOException {
 		closeChattingRoom();
-		
+		System.out.println("1. exit_btn");
 		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
 		tmp.close();
 	}
