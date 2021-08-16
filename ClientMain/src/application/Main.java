@@ -12,36 +12,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-	Socket socketroominfo;
 
 	FXMLLoader f;
 	Parent r;
 	Stage stage2;
-	
-	public void openWaitingroom() {
-		Thread thread = new Thread() {
-			public void run() {
-				try {
-					socketroominfo = new Socket("127.0.0.1", 8888);
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		thread.start();
-	}
-	
-	public void closeWindow() {
-		System.out.println("called closeWindow()");
-		try {
-			if (socketroominfo != null && !socketroominfo.isClosed()) {
-				socketroominfo.close();
-				System.out.println("socketroominfo is closed.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 	
 	public void start(Stage primaryStage) throws IOException {
 		
@@ -50,7 +24,6 @@ public class Main extends Application {
 		Parent root = FXMLLoader.load(getClass().getResource("view/main1.fxml"));
 		Scene scene = new Scene(root);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		primaryStage.setOnCloseRequest(event -> closeWindow());
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("YSB");
 		primaryStage.show();
@@ -79,7 +52,4 @@ public class Main extends Application {
 		launch(args);
 	}
 	
-	public Socket getSocket() {
-		return socketroominfo;
-	}
 }
