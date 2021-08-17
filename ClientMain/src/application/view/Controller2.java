@@ -108,9 +108,9 @@ public class Controller2 implements Initializable{
 	
 	BorderPane pane;
 	BorderPane pane2;
-	@FXML
 
 	int cnt = 1;
+	@FXML
 	// ----------------- 방만들기 버튼 -----------------------
 	private void testFunc(ActionEvent event) {
 		// 방만들기 버튼은 서버에 방 만들어진 방 정보 보내주고 chat scene만 띄어주는 역할
