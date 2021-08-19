@@ -18,9 +18,6 @@ public class Main extends Application {
 	Stage stage2;
 	
 	public void start(Stage primaryStage) throws IOException {
-		
-		//openWaitingroom();
-		
 		Parent root = FXMLLoader.load(getClass().getResource("view/main1.fxml"));
 		Scene scene = new Scene(root);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
