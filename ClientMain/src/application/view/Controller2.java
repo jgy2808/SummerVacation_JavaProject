@@ -53,6 +53,7 @@ public class Controller2 implements Initializable{
 	public TextArea nick_text;
 	@FXML
 	private Button createbtn;
+	private Button changebtn;
 	
 	Main scene = new Main();
 	Stage stage;
@@ -67,7 +68,7 @@ public class Controller2 implements Initializable{
 		
 		try {
 			// 서버에 방 리스트 정보 수신을 요청해야함 -> 함수를 실행시켜놓고 있으면 
-			//openWaitingRoom();
+//			openWaitingRoom();
 			//RefreshRoomList();
 			
 			search_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
@@ -152,7 +153,17 @@ public class Controller2 implements Initializable{
 //		});
 		
 		dc.connect();
-		dc.testInsert(cnt++, title_text.getText(), nick_text.getText(), 3);
+		dc.testInsert(cnt++, title_text.getText(), nick_text.getText(), 1);
+		System.out.println(dc.getCode(title_text.getText()));
+		dc.close();
+		
+	}
+	
+	@FXML
+	private void changebtnOnAction(ActionEvent event) {
+		dc.connect();
+		dc.testDelete();
+		System.out.println("Delete success");
 		dc.close();
 	}
 	
