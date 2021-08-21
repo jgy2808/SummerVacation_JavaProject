@@ -55,7 +55,10 @@ public class Controller2 implements Initializable{
 	public TextArea nick_text;
 	@FXML
 	private Button createbtn;
+	@FXML
 	private Button changebtn;
+	@FXML
+	private Button refreshbtn;
 	
 	Main scene = new Main();
 	Stage stage;
@@ -70,7 +73,7 @@ public class Controller2 implements Initializable{
 		
 		try {
 			// 서버에 방 리스트 정보 수신을 요청해야함 -> 함수를 실행시켜놓고 있으면 
-			openWaitingRoom();
+//			openWaitingRoom();
 			//RefreshRoomList();
 			
 			search_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
@@ -133,47 +136,45 @@ public class Controller2 implements Initializable{
 			return ;
 		}
 //		
-//		dc.connect();
-//		dc.InsertRoominfo(roomCode, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
-//		dc.close();
+		dc.connect();
+		dc.InsertRoominfo(roomCode++, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
+		dc.close();
 //		
 //		System.out.println("testFunc end");
 		
-		SendRoominfo(members_text.getText() + "#" + roomCode);
-
-		stage = (Stage) createbtn.getScene().getWindow();
-		scene.chattingScene(stage);
-		
-		pane = new BorderPane();
-		pane2 = new BorderPane();
-		String t = title_text.getText();
-		Button btn = new Button("입장");
-		btn.setId(Integer.toString(roomCode++));
-		titleLabel = new Label(t + " : " + btn.getId());
-		try {
-			roomMasterLabel = new Label(nick_text.getText());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		memberCountLabel = new Label("1/" + members_text.getText());
-		
-		pane.setLeft(titleLabel);
-		pane.setCenter(roomMasterLabel);
-		pane2.setLeft(memberCountLabel);
-		pane2.setRight(btn);
-		pane.setRight(pane2);
-		
-		roomList.getItems().add(pane);
-//		roomList.getItems().add(title_text.getText() + " : " + members_text.getText());
-		
-		
-		
-		// 입장 버튼
-		btn.setOnAction(arg0 -> {
-			SendRoominfo("entry#" + btn.getId());
-			stage = (Stage) createbtn.getScene().getWindow();
-			scene.chattingScene(stage);
-		});
+//		SendRoominfo(members_text.getText() + "#" + roomCode);
+//		scene.chattingScene(Integer.toString(roomCode));
+//		
+//		pane = new BorderPane();
+//		pane2 = new BorderPane();
+//		String t = title_text.getText();
+//		Button btn = new Button("입장");
+//		btn.setId(Integer.toString(roomCode++));
+//		titleLabel = new Label(t + " : " + btn.getId());
+//		try {
+//			roomMasterLabel = new Label(nick_text.getText());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		memberCountLabel = new Label("1/" + members_text.getText());
+//		
+//		pane.setLeft(titleLabel);
+//		pane.setCenter(roomMasterLabel);
+//		pane2.setLeft(memberCountLabel);
+//		pane2.setRight(btn);
+//		pane.setRight(pane2);
+//		
+//		roomList.getItems().add(pane);
+////		roomList.getItems().add(title_text.getText() + " : " + members_text.getText());
+//		
+//		
+//		
+//		// 입장 버튼
+//		btn.setOnAction(arg0 -> {
+//			SendRoominfo("entry#" + btn.getId());
+////			stage = (Stage) createbtn.getScene().getWindow();
+//			scene.chattingScene(btn.getId());
+//		});
 	}
 	
 	@FXML
@@ -182,6 +183,54 @@ public class Controller2 implements Initializable{
 		dc.testDelete();
 		System.out.println("Delete success");
 		dc.close();
+	}
+	
+	int i;
+	@FXML
+	private void refreshbtnOnAction(ActionEvent event) {
+//		roomList.refresh();
+		
+		dc.connect();
+		String roominfo = dc.testSelect();
+		dc.close();
+		
+		String[] roomArray = roominfo.split("\n"); // 방 제목, 인원수, 비번, 코드
+
+		for (i = 0; i < roomArray.length; i++) {
+			String[] roomArrayinfo = roomArray[i].split(", ");
+			
+			Platform.runLater(() -> {
+				titleLabel = new Label(roomArrayinfo[1]);
+				roomMasterLabel = new Label(roomArrayinfo[2]);
+				memberCountLabel = new Label(roomArrayinfo[3] + "/" + roomArrayinfo[4]);
+				
+				Button btn = new Button("입장");
+				btn.setId(roomArrayinfo[0]);
+				
+				pane = new BorderPane();
+				pane2 = new BorderPane();
+				
+				pane.setLeft(titleLabel);
+				pane.setCenter(roomMasterLabel);
+				pane2.setLeft(memberCountLabel);
+				pane2.setRight(btn);
+				pane.setRight(pane2);
+				
+				roomList.getItems().replaceAll(null);
+				roomList.getItems().add(i, pane);
+				
+				btn.setOnAction(event2 -> {
+					SendRoominfo(btn.getId());
+					// 채팅씬 열어주기 지금은 대기방 열리기로 되어있음
+					scene.chattingScene(btn.getId());
+				});
+			});
+			if (i <= roomList.getItems().size()) {
+				for (int k = i; k <= roomList.getItems().size(); k++) {
+					roomList.getItems().remove(k);
+				}
+			}
+		}
 	}
 	
 	// ----------------- 대기실 관련 메소드 --------------------------
