@@ -35,7 +35,7 @@ public class DBConnect {
 	
 	public void InsertRoominfo(int c, String t, String m, int n) { // code, title, master, num
 		PreparedStatement ps = null;
-		String sql = "insert into roominfo values (?, ?, ?, ?);";
+		String sql = "insert into roominfo values (?, ?, ?, 1, ?);";
 		try {
 			ps = conn.prepareStatement(sql);
 			ps.setInt(1, c);
@@ -46,11 +46,12 @@ public class DBConnect {
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		try {
-			if (ps != null) ps.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null) ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -62,12 +63,38 @@ public class DBConnect {
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null) ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
+	}
+	
+	public String testSelect() {
+		String roominfo = "";
+		PreparedStatement ps = null;
+		String sql = "select * from roominfo;";
+		ResultSet rs = null;
 		try {
-			if (ps != null) ps.close();
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				roominfo += (rs.getString(1) + ", " + rs.getString(2) + ", "  + rs.getString(3) + ", "  + rs.getString(4) + ", "  + rs.getString(5));
+				roominfo += "\n";
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null) ps.close();
+				if (rs != null) rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
+		return roominfo;
 	}
 	
 	public String getCode(String t) {
@@ -86,13 +113,13 @@ public class DBConnect {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		
-		try {
-			if (ps != null) ps.close();
-			if (rs != null) rs.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null) ps.close();
+				if (rs != null) rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return code;
