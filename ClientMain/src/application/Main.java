@@ -26,14 +26,14 @@ public class Main extends Application {
 		primaryStage.show();
 	}
 	
-	public void chattingScene(Stage stage) {
+	public void chattingScene(String title) {
 		try {
 			f = new FXMLLoader(getClass().getResource("view/main2.fxml"));
 			
 			r = (Parent) f.load();
 			stage2 = new Stage();
 			stage2.setScene(new Scene(r));
-			stage2.setTitle("YSB2");
+			stage2.setTitle(title);
 			stage2.show();				// 새로운 창을 여는 코드	
 			
 //			Stage tmp = (Stage) btn.getScene().getWindow();
