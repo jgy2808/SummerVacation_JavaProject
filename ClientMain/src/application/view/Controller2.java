@@ -112,9 +112,7 @@ public class Controller2 implements Initializable{
 	BorderPane pane;
 	BorderPane pane2;
 
-	int cnt = 0;
-	
-	int roomCode;
+	int roomCode = 0;
 	// ----------------- 방만들기 버튼 -----------------------
 	@FXML
 	private void testFunc(ActionEvent event) {
@@ -141,7 +139,7 @@ public class Controller2 implements Initializable{
 //		
 //		System.out.println("testFunc end");
 		
-		SendRoominfo("new#" + members_text.getText());
+		SendRoominfo(members_text.getText() + "#" + roomCode);
 
 		stage = (Stage) createbtn.getScene().getWindow();
 		scene.chattingScene(stage);
@@ -150,7 +148,7 @@ public class Controller2 implements Initializable{
 		pane2 = new BorderPane();
 		String t = title_text.getText();
 		Button btn = new Button("입장");
-		btn.setId(Integer.toString(cnt++));
+		btn.setId(Integer.toString(roomCode++));
 		titleLabel = new Label(t + " : " + btn.getId());
 		try {
 			roomMasterLabel = new Label(nick_text.getText());
