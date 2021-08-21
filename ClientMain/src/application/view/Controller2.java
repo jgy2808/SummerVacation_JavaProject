@@ -21,6 +21,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -68,7 +70,7 @@ public class Controller2 implements Initializable{
 		
 		try {
 			// 서버에 방 리스트 정보 수신을 요청해야함 -> 함수를 실행시켜놓고 있으면 
-//			openWaitingRoom();
+			openWaitingRoom();
 			//RefreshRoomList();
 			
 			search_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
@@ -110,53 +112,70 @@ public class Controller2 implements Initializable{
 	BorderPane pane;
 	BorderPane pane2;
 
-	int cnt = 1;
-	@FXML
+	int cnt = 0;
+	
+	int roomCode;
 	// ----------------- 방만들기 버튼 -----------------------
+	@FXML
 	private void testFunc(ActionEvent event) {
 		// 방만들기 버튼은 서버에 방 만들어진 방 정보 보내주고 chat scene만 띄어주는 역할
-		// 대기실에 room list띄워주는건 initialize나 refresh 버튼
-//		SendRoominfo("new");
-//
-//		stage = (Stage) createbtn.getScene().getWindow();
-//		scene.chattingScene(stage);
-//		
-//		pane = new BorderPane();
-//		pane2 = new BorderPane();
-//		String t = title_text.getText();
-//		Button btn = new Button("입장");
-//		btn.setId(Integer.toString(cnt++));
-//		titleLabel = new Label(t + " : " + btn.getId());
-//		try {
-//			roomMasterLabel = new Label(nick_text.getText());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		memberCountLabel = new Label("1/8");	
-//		
-//		pane.setLeft(titleLabel);
-//		pane.setCenter(roomMasterLabel);
-//		pane2.setLeft(memberCountLabel);
-//		pane2.setRight(btn);
-//		pane.setRight(pane2);
-//		
-//		roomList.getItems().add(pane);
-////		roomList.getItems().add(title_text.getText() + " : " + members_text.getText());
-//		
-//		
-//		
-//		// 입장 버튼
-//		btn.setOnAction(arg0 -> {
-//			SendRoominfo(btn.getId());
-//			stage = (Stage) createbtn.getScene().getWindow();
-//			scene.chattingScene(stage);
-//		});
+//		// 대기실에 room list띄워주는건 initialize나 refresh 버튼
+//		dc.connect();
+//		dc.testInsert(cnt++, title_text.getText(), nick_text.getText(), 1);
+//		System.out.println(dc.getCode(title_text.getText()));
+//		dc.close();
 		
-		dc.connect();
-		dc.testInsert(cnt++, title_text.getText(), nick_text.getText(), 1);
-		System.out.println(dc.getCode(title_text.getText()));
-		dc.close();
+		if (title_text.getText().equals("") || nick_text.getText().equals("") || members_text.getText().equals("")) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Warning");
+			alert.setHeaderText("방만들기를 할 수 없습니다.");
+			alert.setContentText("방 정보를 모두 입력해주세요!");
+
+			alert.showAndWait();
+			return ;
+		}
+//		
+//		dc.connect();
+//		dc.InsertRoominfo(roomCode, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
+//		dc.close();
+//		
+//		System.out.println("testFunc end");
 		
+		SendRoominfo("new#" + members_text.getText());
+
+		stage = (Stage) createbtn.getScene().getWindow();
+		scene.chattingScene(stage);
+		
+		pane = new BorderPane();
+		pane2 = new BorderPane();
+		String t = title_text.getText();
+		Button btn = new Button("입장");
+		btn.setId(Integer.toString(cnt++));
+		titleLabel = new Label(t + " : " + btn.getId());
+		try {
+			roomMasterLabel = new Label(nick_text.getText());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		memberCountLabel = new Label("1/" + members_text.getText());
+		
+		pane.setLeft(titleLabel);
+		pane.setCenter(roomMasterLabel);
+		pane2.setLeft(memberCountLabel);
+		pane2.setRight(btn);
+		pane.setRight(pane2);
+		
+		roomList.getItems().add(pane);
+//		roomList.getItems().add(title_text.getText() + " : " + members_text.getText());
+		
+		
+		
+		// 입장 버튼
+		btn.setOnAction(arg0 -> {
+			SendRoominfo("entry#" + btn.getId());
+			stage = (Stage) createbtn.getScene().getWindow();
+			scene.chattingScene(stage);
+		});
 	}
 	
 	@FXML
