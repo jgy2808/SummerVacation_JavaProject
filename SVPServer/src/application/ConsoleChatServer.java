@@ -10,14 +10,14 @@ import java.util.HashMap;
 
 
 public class ConsoleChatServer extends Thread{
-	private static ArrayList<ArrayList<Socket>> room = new ArrayList<ArrayList<Socket>>();
+	private static HashMap<String, ArrayList<Socket>> room = new HashMap<String, ArrayList<Socket>>();
 	private static ArrayList<Socket> clients;
 	
 	private static ArrayList<Socket> rclients = new ArrayList<>();
 	
 	ServerSocket serverSock;
 	
-	public void openChatServer(Socket sock, int rNum) {
+	public void openChatServer(Socket sock, String rNum) {
 		InputStream fromClient = null;
 		OutputStream toClient = null;
 		byte[] buf = new byte[1024];
@@ -44,7 +44,7 @@ public class ConsoleChatServer extends Thread{
 				if(sock !=null) {
 					sock.close();
 					//접속 후 나가버린 클라이언트인 경우 ArrayList에서 제거
-					remove(sock);
+					remove(sock, rNum);
 				}
 				fromClient=null;
 				toClient=null;
@@ -62,24 +62,27 @@ public class ConsoleChatServer extends Thread{
 			int length;
 			while ((length = is.read(buffer)) != -1) {
 				String rc = new String(buffer, 0, length, "UTF-8"); // roomcode
-				String[] rcArray = rc.split("#");
-				if (!rcArray[0].equals("new")) { // 방만들기가 아니고 입장일때
+				String[] rcArray = rc.split("#"); 
+				// [0] : 방 종류(entry: 입장, int: 방 크기(new))
+				// [1] : 방 코드(hashmap에 들어갈것)
+				
+				// ---------------입장 버튼-----------------
+				if (rcArray[0].equals("entry")) { 
 					System.out.println(rc + ": 입장");
-					int rNum = Integer.parseInt(rcArray[1]);
 					Thread thread = new Thread() {
 						public void run() {
 							try {
 								Socket socket = serverSock.accept();
-								clients = room.remove(rNum);
+								clients = room.remove(rcArray[1]);
 								clients.add(socket);
-								room.add(rNum, clients);
-								for (ArrayList<Socket> test : room) {
-									for (Socket s : test) {
-										System.out.print(s.getPort() + "(" + test.size() + ")" + ", ");
+								room.put(rcArray[1], clients);
+								for (String key : room.keySet()) {
+									for (Socket s : room.get(key)) {
+										System.out.print(s.getPort() + "(" + room.get(key).size() + ")" + ", ");
 									}
 									System.out.println();
 								}
-								openChatServer(socket, rNum);
+								openChatServer(socket, rcArray[1]);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -92,17 +95,17 @@ public class ConsoleChatServer extends Thread{
 						public void run() {
 							try {
 								Socket socket = serverSock.accept();
-								clients = new ArrayList<>(Integer.parseInt(rcArray[1]));
+								clients = new ArrayList<>(Integer.parseInt(rcArray[0]));
 								clients.add(socket);
-								room.add(clients);
+								room.put(rcArray[1], clients);
 								System.out.println(room.size());
-								for (ArrayList<Socket> test : room) {
-									for (Socket s : test) {
-										System.out.print(s.getPort() + "(" + test.size() + ")" + ", ");
+								for (String key : room.keySet()) {
+									for (Socket s : room.get(key)) {
+										System.out.print(s.getPort() + "(" + room.get(key).size() + ")" + ", ");
 									}
 									System.out.println();
 								}
-								openChatServer(socket, room.size() - 1);
+								openChatServer(socket, Integer.toString(room.size() - 1));
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -169,13 +172,11 @@ public class ConsoleChatServer extends Thread{
 
 	// ArrayList에서 클라이언트 소켓 제거
 	// 접속 후 나가버리는 경우 쓸때 오류가 발생
-	public void remove(Socket socket) {
-		for (ArrayList<Socket> a : room) {
-			for (Socket s : a) {
-				if (socket == s) {
-					ConsoleChatServer.clients.remove(socket);// 배열의 remove메서드임 이건
-					break;
-				}
+	public void remove(Socket socket, String roomCode) {
+		for (Socket s : room.get(roomCode)) {
+			if (socket == s) {
+				ConsoleChatServer.clients.remove(socket);// 배열의 remove메서드임 이건
+				break;
 			}
 		}
 	}
