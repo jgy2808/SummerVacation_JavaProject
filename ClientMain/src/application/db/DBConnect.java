@@ -33,7 +33,7 @@ public class DBConnect {
 		}
 	}
 	
-	public void testInsert(int c, String t, String m, int n) { // code, title, master, num
+	public void InsertRoominfo(int c, String t, String m, int n) { // code, title, master, num
 		PreparedStatement ps = null;
 		String sql = "insert into roominfo values (?, ?, ?, ?);";
 		try {
