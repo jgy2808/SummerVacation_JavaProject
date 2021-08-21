@@ -17,17 +17,6 @@ public class ConsoleChatServer extends Thread{
 	
 	ServerSocket serverSock;
 	
-	//ArrayList에서 클라이언트 소켓 제거
-	//접속 후 나가버리는 경우 쓸때 오류가 발생
-	public void remove(Socket socket) {
-		for( Socket s : ConsoleChatServer.clients) {
-			if(socket == s) {
-				ConsoleChatServer.clients.remove(socket);//배열의 remove메서드임 이건
-				break;
-			}
-		}
-	}
-	
 	public void openChatServer(Socket sock, int rNum) {
 		InputStream fromClient = null;
 		OutputStream toClient = null;
@@ -73,16 +62,23 @@ public class ConsoleChatServer extends Thread{
 			int length;
 			while ((length = is.read(buffer)) != -1) {
 				String rc = new String(buffer, 0, length, "UTF-8"); // roomcode
-				if (!rc.equals("new")) { // 방만들기가 아니고 입장일때
+				String[] rcArray = rc.split("#");
+				if (!rcArray[0].equals("new")) { // 방만들기가 아니고 입장일때
 					System.out.println(rc + ": 입장");
-					int rNum = Integer.parseInt(rc);
+					int rNum = Integer.parseInt(rcArray[1]);
 					Thread thread = new Thread() {
 						public void run() {
 							try {
 								Socket socket = serverSock.accept();
-								clients = room.get(rNum);
+								clients = room.remove(rNum);
 								clients.add(socket);
 								room.add(rNum, clients);
+								for (ArrayList<Socket> test : room) {
+									for (Socket s : test) {
+										System.out.print(s.getPort() + "(" + test.size() + ")" + ", ");
+									}
+									System.out.println();
+								}
 								openChatServer(socket, rNum);
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -96,13 +92,13 @@ public class ConsoleChatServer extends Thread{
 						public void run() {
 							try {
 								Socket socket = serverSock.accept();
-								clients = new ArrayList<>();
+								clients = new ArrayList<>(Integer.parseInt(rcArray[1]));
 								clients.add(socket);
 								room.add(clients);
 								System.out.println(room.size());
 								for (ArrayList<Socket> test : room) {
 									for (Socket s : test) {
-										System.out.print(s.getPort() + ", ");
+										System.out.print(s.getPort() + "(" + test.size() + ")" + ", ");
 									}
 									System.out.println();
 								}
@@ -118,6 +114,13 @@ public class ConsoleChatServer extends Thread{
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				System.out.println(sock.getPort() + " : 연결 종료(방소켓)");
+				sock.close();
+			} catch (IOException e) { 
+				e.printStackTrace(); 
+			}
 		}
 	}
 	
@@ -162,5 +165,18 @@ public class ConsoleChatServer extends Thread{
 	public static void main(String[] args) throws IOException{
 		ConsoleChatServer myServer=new ConsoleChatServer();
 		myServer.start();
+	}
+
+	// ArrayList에서 클라이언트 소켓 제거
+	// 접속 후 나가버리는 경우 쓸때 오류가 발생
+	public void remove(Socket socket) {
+		for (ArrayList<Socket> a : room) {
+			for (Socket s : a) {
+				if (socket == s) {
+					ConsoleChatServer.clients.remove(socket);// 배열의 remove메서드임 이건
+					break;
+				}
+			}
+		}
 	}
 }
