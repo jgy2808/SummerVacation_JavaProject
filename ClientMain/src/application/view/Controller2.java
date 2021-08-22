@@ -63,7 +63,7 @@ public class Controller2 implements Initializable{
 	Main scene = new Main();
 	Stage stage;
 	
-	DBConnect dc = new DBConnect();
+	private DBConnect dc = new DBConnect();
 
 	ObservableList<BorderPane> savedList = FXCollections.observableArrayList();
 	int checkSearch = 0;
@@ -74,7 +74,7 @@ public class Controller2 implements Initializable{
 		
 		try {
 			// 서버에 방 리스트 정보 수신을 요청해야함 -> 함수를 실행시켜놓고 있으면 
-//			openWaitingRoom();
+			openWaitingRoom();
 			RefreshRoomList();
 			
 			search_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
@@ -210,6 +210,7 @@ public class Controller2 implements Initializable{
 		dc.connect();
 		String roominfo = dc.testSelect();
 		if (roominfo.equals("")) return;
+		dc.close();
 		
 		String[] roomArray = roominfo.split("\n"); // 방 제목, 인원수, 비번, 코드
 		
@@ -238,7 +239,9 @@ public class Controller2 implements Initializable{
 					String[] memArray = memberCountLabel.getText().split("/");
 					if (Integer.parseInt(memArray[0]) < Integer.parseInt(memArray[1])){
 						SendRoominfo("entry#" + btn.getId());
+						dc.connect();
 						dc.EnterRoom(Integer.parseInt(btn.getId()));
+						dc.close();
 						// 채팅씬 열어주기 지금은 대기방 열리기로 되어있음
 						scene.chattingScene(btn.getId());
 					} else {
@@ -252,7 +255,6 @@ public class Controller2 implements Initializable{
 				});
 			});
 		}
-		dc.close();
 	}
 
 	
@@ -284,12 +286,5 @@ public class Controller2 implements Initializable{
 		roomList.setItems(savedList);
 		checkSearch = 0;
 	}
-//	
-//	private void setRoomCode() {
-//		dc.connect();
-//		if (dc.getLastCode() == 0) return;
-//		roomCode = dc.getLastCode() + 1;
-//		dc.close();
-//	}
 }
 // main1 컨트롤러 달기, 리스트뷰 이름 정하기, 버튼에 함수 달기
