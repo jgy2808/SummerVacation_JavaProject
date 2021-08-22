@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import application.db.DBConnect;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -30,6 +31,10 @@ public class Controller3 implements Initializable{
 	private TextArea chat_text;
 	@FXML
 	private ListView<BorderPane> chat_list;
+	@FXML
+	private Label currentNum_Label;
+	@FXML
+	private Label maxNum_Label;
 
 	BorderPane p = new BorderPane();
 	BorderPane u = new BorderPane();
@@ -41,6 +46,8 @@ public class Controller3 implements Initializable{
 	OutputStream os;
 	InputStream is;
 	String nick = "nickname"; //(Controller2.nick_text).getText();
+	
+	DBConnect dc = new DBConnect();
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -167,9 +174,14 @@ public class Controller3 implements Initializable{
 	
 	@FXML
 	public void exit_btn() throws IOException {
+		
+		
+		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
+		dc.connect();
+		dc.ExitRoom(Integer.parseInt(tmp.getTitle()));
+		dc.close();
 		closeChattingRoom();
 		System.out.println("1. exit_btn");
-		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
 		tmp.close();
 	}
 	
