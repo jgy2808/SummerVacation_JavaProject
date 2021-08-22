@@ -67,6 +67,7 @@ public class Controller2 implements Initializable{
 
 	ObservableList<BorderPane> savedList = FXCollections.observableArrayList();
 	int checkSearch = 0;
+	int roomCode = 0;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -74,7 +75,7 @@ public class Controller2 implements Initializable{
 		try {
 			// 서버에 방 리스트 정보 수신을 요청해야함 -> 함수를 실행시켜놓고 있으면 
 //			openWaitingRoom();
-			//RefreshRoomList();
+			RefreshRoomList();
 			
 			search_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
 
@@ -115,16 +116,10 @@ public class Controller2 implements Initializable{
 	BorderPane pane;
 	BorderPane pane2;
 
-	int roomCode = 0;
 	// ----------------- 방만들기 버튼 -----------------------
 	@FXML
 	private void testFunc(ActionEvent event) {
-		// 방만들기 버튼은 서버에 방 만들어진 방 정보 보내주고 chat scene만 띄어주는 역할
-//		// 대기실에 room list띄워주는건 initialize나 refresh 버튼
-//		dc.connect();
-//		dc.testInsert(cnt++, title_text.getText(), nick_text.getText(), 1);
-//		System.out.println(dc.getCode(title_text.getText()));
-//		dc.close();
+		// 대기실에 room list띄워주는건 initialize나 refresh 버튼
 		
 		if (title_text.getText().equals("") || nick_text.getText().equals("") || members_text.getText().equals("")) {
 			Alert alert = new Alert(AlertType.WARNING);
@@ -137,13 +132,17 @@ public class Controller2 implements Initializable{
 		}
 //		
 		dc.connect();
-		dc.InsertRoominfo(roomCode++, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
+		roomCode = dc.getLastCode();
+		if (roomCode > 0) {
+			roomCode += 1;
+		}
+		dc.InsertRoominfo(roomCode, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
 		dc.close();
 //		
 //		System.out.println("testFunc end");
 		
-//		SendRoominfo(members_text.getText() + "#" + roomCode);
-//		scene.chattingScene(Integer.toString(roomCode));
+		SendRoominfo(members_text.getText() + "#" + roomCode);
+		scene.chattingScene(Integer.toString(roomCode));
 //		
 //		pane = new BorderPane();
 //		pane2 = new BorderPane();
@@ -177,60 +176,19 @@ public class Controller2 implements Initializable{
 //		});
 	}
 	
+	// 닉네임 교체 버튼
 	@FXML
 	private void changebtnOnAction(ActionEvent event) {
-		dc.connect();
-		dc.testDelete();
-		System.out.println("Delete success");
-		dc.close();
+//		dc.connect();
+//		dc.testDelete();
+//		System.out.println("Delete success");
+//		dc.close();
 	}
 	
-	int i;
+	// 새로고침 버튼
 	@FXML
 	private void refreshbtnOnAction(ActionEvent event) {
-//		roomList.refresh();
-		
-		dc.connect();
-		String roominfo = dc.testSelect();
-		dc.close();
-		
-		String[] roomArray = roominfo.split("\n"); // 방 제목, 인원수, 비번, 코드
-
-		for (i = 0; i < roomArray.length; i++) {
-			String[] roomArrayinfo = roomArray[i].split(", ");
-			
-			Platform.runLater(() -> {
-				titleLabel = new Label(roomArrayinfo[1]);
-				roomMasterLabel = new Label(roomArrayinfo[2]);
-				memberCountLabel = new Label(roomArrayinfo[3] + "/" + roomArrayinfo[4]);
-				
-				Button btn = new Button("입장");
-				btn.setId(roomArrayinfo[0]);
-				
-				pane = new BorderPane();
-				pane2 = new BorderPane();
-				
-				pane.setLeft(titleLabel);
-				pane.setCenter(roomMasterLabel);
-				pane2.setLeft(memberCountLabel);
-				pane2.setRight(btn);
-				pane.setRight(pane2);
-				
-				roomList.getItems().replaceAll(null);
-				roomList.getItems().add(i, pane);
-				
-				btn.setOnAction(event2 -> {
-					SendRoominfo(btn.getId());
-					// 채팅씬 열어주기 지금은 대기방 열리기로 되어있음
-					scene.chattingScene(btn.getId());
-				});
-			});
-			if (i <= roomList.getItems().size()) {
-				for (int k = i; k <= roomList.getItems().size(); k++) {
-					roomList.getItems().remove(k);
-				}
-			}
-		}
+		RefreshRoomList();
 	}
 	
 	// ----------------- 대기실 관련 메소드 --------------------------
@@ -247,55 +205,54 @@ public class Controller2 implements Initializable{
 	}
 	
 	public void RefreshRoomList() {
-		Thread thread = new Thread() {
-			public void run() {
-				try {
-					os = socketRoominfo.getOutputStream();
-					String sign = "Refresh";
-					byte[] refreshSign = sign.getBytes("UTF-8");
-					os.write(refreshSign);
-					os.flush();
-					
-					is = socketRoominfo.getInputStream();
-					byte[] buffer = new byte[512];
-					int length = is.read(buffer);
-					if (length == -1)
-						throw new IOException();
-					String roominfo = new String(buffer, 0, length, "UTF-8");
-					String[] roomArray = roominfo.split("\n"); // 방 제목, 인원수, 비번, 코드
+		roomList.getItems().clear();
 
-					for (int i = 0; i < roomArray.length; i++) {
-						String[] roomArrayinfo = roomArray[i].split(",");
-						titleLabel = new Label(roomArrayinfo[0]);
-						roomMasterLabel = new Label(roomArrayinfo[1]);
-						memberCountLabel = new Label(roomArrayinfo[2]);
-						
-						Button btn = new Button("입장");
-						btn.setId(roomArrayinfo[3]);
-						
-						pane.setLeft(titleLabel);
-						pane.setCenter(roomMasterLabel);
-						pane2.setLeft(memberCountLabel);
-						pane2.setRight(btn);
-						pane.setRight(pane2);
-						
-						Platform.runLater(() -> {
-							roomList.getItems().add(pane);
-						});
-						btn.setOnAction(event -> {
-//							SendRoominfo(btn.getId());
-							// 채팅씬 열어주기 지금은 대기방 열리기로 되어있음
-//							Stage stage = (Stage) createbtn.getScene().getWindow();
-//							scene.chattingScene(stage);
-						});
+		dc.connect();
+		String roominfo = dc.testSelect();
+		if (roominfo.equals("")) return;
+		
+		String[] roomArray = roominfo.split("\n"); // 방 제목, 인원수, 비번, 코드
+		
+		for (int i = 0; i < roomArray.length; i++) {
+			String[] roomArrayinfo = roomArray[i].split(", ");
+
+			Platform.runLater(() -> {
+				titleLabel = new Label(roomArrayinfo[1] + " : " + roomArrayinfo[0]);
+				roomMasterLabel = new Label(roomArrayinfo[2]);
+				memberCountLabel = new Label(roomArrayinfo[3] + "/" + roomArrayinfo[4]);
+
+				Button btn = new Button("입장");
+				btn.setId(roomArrayinfo[0]);
+
+				pane = new BorderPane();
+				pane2 = new BorderPane();
+
+				pane.setLeft(titleLabel);
+				pane.setCenter(roomMasterLabel);
+				pane2.setLeft(memberCountLabel);
+				pane2.setRight(btn);
+				pane.setRight(pane2);
+
+				roomList.getItems().add(pane);
+				btn.setOnAction(event2 -> {
+					String[] memArray = memberCountLabel.getText().split("/");
+					if (Integer.parseInt(memArray[0]) < Integer.parseInt(memArray[1])){
+						SendRoominfo("entry#" + btn.getId());
+						dc.EnterRoom(Integer.parseInt(btn.getId()));
+						// 채팅씬 열어주기 지금은 대기방 열리기로 되어있음
+						scene.chattingScene(btn.getId());
+					} else {
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setTitle("Warning");
+						alert.setHeaderText("방에 입장할 수 없습니다.");
+						alert.setContentText("인원수가 꽉 찼습니다!");
+						alert.showAndWait();
+						return ;
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					closeWaitingRoom();
-				}
-			}
-		};
-		thread.start();
+				});
+			});
+		}
+		dc.close();
 	}
 
 	
@@ -327,5 +284,12 @@ public class Controller2 implements Initializable{
 		roomList.setItems(savedList);
 		checkSearch = 0;
 	}
+//	
+//	private void setRoomCode() {
+//		dc.connect();
+//		if (dc.getLastCode() == 0) return;
+//		roomCode = dc.getLastCode() + 1;
+//		dc.close();
+//	}
 }
 // main1 컨트롤러 달기, 리스트뷰 이름 정하기, 버튼에 함수 달기
