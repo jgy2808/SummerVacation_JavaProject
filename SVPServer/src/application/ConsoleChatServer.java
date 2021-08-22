@@ -26,7 +26,9 @@ public class ConsoleChatServer extends Thread{
 		try {
 			for (Socket s : room.get(rNum)) {
 				toClient = s.getOutputStream();
-				toClient.write(("inout#" + Integer.toString(room.get(rNum).size())).getBytes("UTF-8"));
+				byte[] buffer = ("inout#" + Integer.toString(room.get(rNum).size())).getBytes("UTF-8");
+				int length = buffer.length;
+				toClient.write(buffer, 0, length);
 				toClient.flush();
 			}
 			System.out.println(sock+ " : chat socket ¿¬°áµÊ -> " + sock.getPort());
