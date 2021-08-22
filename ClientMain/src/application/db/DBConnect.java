@@ -116,6 +116,7 @@ public class DBConnect {
 	}
 	
 	public void ExitRoom(int roomcode) {
+		System.out.println("exitroom method on");
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		int currentNum = 0;
@@ -124,16 +125,23 @@ public class DBConnect {
 			ps = conn.prepareStatement(sql);
 			ps.setInt(1, roomcode);
 			rs = ps.executeQuery();
-			currentNum = rs.getInt(1);
+			while(rs.next()) {
+				currentNum = rs.getInt(1);
+			}
+			ps.close();
 			
 			if (currentNum > 1) {
 				sql = "update roominfo set CurrentNum = CurrentNum - 1 where Roomcode = ?;";
+				ps = conn.prepareStatement(sql);
 				ps.setInt(1, roomcode);
 				ps.execute();
+				ps.close();
 			} else {
 				sql = "delete from roominfo where Roomcode = ?;";
+				ps = conn.prepareStatement(sql);
 				ps.setInt(1, roomcode);
 				ps.execute();
+				ps.close();
 			}
 			
 		} catch (SQLException e) {
@@ -146,6 +154,7 @@ public class DBConnect {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("exitroom method off");
 	}
 	
 	public int getLastCode() {
@@ -173,6 +182,33 @@ public class DBConnect {
 		}
 		System.out.println(code);
 		return code;
+	}
+	
+	public int getMaxNum(int roomcode) {
+		int maxNum = 0;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String sql = "select MaxNum from roominfo where Roomcode = ?;";
+		
+		try {
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, roomcode);
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				maxNum = rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null) ps.close();
+				if (rs != null) rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return maxNum;
 	}
 	
 	public void close() {
