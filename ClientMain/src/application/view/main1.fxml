@@ -48,24 +48,35 @@
                <children>
                   <VBox prefHeight="108.0" prefWidth="250.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#search_cancel" prefHeight="35.0" prefWidth="78.0" text="검색취소" textFill="#2b2b2b">
-                           <VBox.margin>
-                              <Insets top="17.0" />
-                           </VBox.margin>
-                           <effect>
-                              <SepiaTone level="0.42" />
-                           </effect>
-                           <font>
-                              <Font name="Arial Italic" size="13.0" />
-                           </font>
-                        </Button>
-                        <Line endX="150.2928924560547" endY="4.655122756958008E-5" startX="-100.0">
-                           <VBox.margin>
-                              <Insets top="15.0" />
-                           </VBox.margin>
-                        </Line>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#search_cancel" prefHeight="35.0" prefWidth="78.0" text="검색취소" textFill="#2b2b2b">
+                                 <effect>
+                                    <SepiaTone level="0.42" />
+                                 </effect>
+                                 <font>
+                                    <Font name="Arial Italic" size="13.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets right="20.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button fx:id="refreshbtn" alignment="CENTER" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#refreshbtnOnAction" prefHeight="35.0" prefWidth="78.0" text="새로고침">
+                                 <effect>
+                                    <SepiaTone />
+                                 </effect>
+                                 <font>
+                                    <Font name="Arial" size="13.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets left="20.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
+                  <Line endX="150.2928924560547" endY="4.655122756958008E-5" startX="-100.0" />
                   <VBox prefHeight="370.0" prefWidth="252.0" style="-fx-background-color: #74D1FC; -fx-border-color: black;">
                      <children>
                         <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="25.0" prefWidth="61.0" style="-fx-border-radius: 3; -fx-border-color: #000000;" text="제목" textAlignment="CENTER">

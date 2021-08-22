@@ -65,11 +65,42 @@
                   </VBox>
                   <VBox prefHeight="347.0" prefWidth="250.0">
                      <children>
-                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="37.0" prefWidth="258.0" style="-fx-background-color: #000000; -fx-opacity: 0.7;" text="Title" textAlignment="CENTER" textFill="WHITE">
-                           <font>
-                              <Font size="26.0" />
-                           </font>
-                        </Label>
+                        <HBox prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #000000; -fx-opacity: 0.7;">
+                           <children>
+                              <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="200.0" text="Title" textAlignment="CENTER" textFill="WHITE">
+                                 <font>
+                                    <Font size="26.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets top="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="currentNum_Label" alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="0" textFill="WHITE">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets top="10.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="/" textFill="WHITE">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets top="10.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="maxNum_Label" alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="0" textFill="WHITE">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets top="10.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
                         <ListView prefHeight="339.0" prefWidth="250.0">
                            <VBox.margin>
                               <Insets />
