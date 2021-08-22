@@ -47,12 +47,20 @@ public class Controller3 implements Initializable{
 	InputStream is;
 	String nick = "nickname"; //(Controller2.nick_text).getText();
 	
-	DBConnect dc = new DBConnect();
+	private DBConnect dc = new DBConnect();
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		try {
 			openChattingRoom();
+			Platform.runLater(() -> {
+				dc.connect();
+				Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
+				
+				int roomcode = Integer.parseInt(tmp.getTitle());
+				maxNum_Label.setText(Integer.toString(dc.getMaxNum(roomcode)));
+				dc.close();
+			});
 			
 			chat_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
 			    @Override
@@ -97,7 +105,6 @@ public class Controller3 implements Initializable{
 					System.out.println("openChattingRoom exception");
 					closeChattingRoom();
 					e.printStackTrace();
-					Platform.exit();
 				}
 			}
 		};
@@ -115,9 +122,15 @@ public class Controller3 implements Initializable{
 				String message = new String(buffer, 0, length, "UTF-8");
 				System.out.println(message);
 				m = message.split("#");
-				Platform.runLater(()->{
-					printMessage(m[0], m[1]);
-				});
+				if (m[0].equals("inout")) {
+					Platform.runLater(() -> {
+						currentNum_Label.setText(m[1]);
+					});
+				}  else {
+					Platform.runLater(() -> {
+						printMessage(m[0], m[1]);
+					});
+				}
 			} catch(Exception e) {
 				System.out.println("ReceiveMessage exception");
 				e.printStackTrace();
@@ -174,8 +187,6 @@ public class Controller3 implements Initializable{
 	
 	@FXML
 	public void exit_btn() throws IOException {
-		
-		
 		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
 		dc.connect();
 		dc.ExitRoom(Integer.parseInt(tmp.getTitle()));
