@@ -24,7 +24,13 @@ public class ConsoleChatServer extends Thread{
 		int count; //몇 바이트의 글을 받았는지 카운트하는 변수
 		
 		try {
+			for (Socket s : room.get(rNum)) {
+				toClient = s.getOutputStream();
+				toClient.write(("inout#" + Integer.toString(room.get(rNum).size())).getBytes("UTF-8"));
+				toClient.flush();
+			}
 			System.out.println(sock+ " : chat socket 연결됨 -> " + sock.getPort());
+			
 			fromClient = sock.getInputStream();
 			while((count = fromClient.read(buf))!= -1) { //중단 ctrl c같은거 누르면 -1을 보내기떄문에
 				for(Socket s : room.get(rNum)) {
@@ -42,9 +48,17 @@ public class ConsoleChatServer extends Thread{
 		}finally {
 			try {
 				if(sock !=null) {
+					for(Socket s : room.get(rNum)) {
+						if(sock != s) {
+							toClient = s.getOutputStream();
+							buf = ("inout#" + Integer.toString(room.get(rNum).size() - 1)).getBytes("UTF-8");
+							toClient.write(buf);
+							toClient.flush();
+						}
+					}
+					remove(sock, rNum);
 					sock.close();
 					//접속 후 나가버린 클라이언트인 경우 ArrayList에서 제거
-					remove(sock, rNum);
 				}
 				fromClient=null;
 				toClient=null;
