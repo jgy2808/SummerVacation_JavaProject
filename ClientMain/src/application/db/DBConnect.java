@@ -97,19 +97,69 @@ public class DBConnect {
 		return roominfo;
 	}
 	
-	public String getCode(String t) {
-		String code = null;
+	public void EnterRoom(int roomcode) {
+		PreparedStatement ps = null;
+		String sql = "update roominfo set CurrentNum = (CurrentNum+1) where Roomcode = ?;";
+		try {
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, roomcode);
+			ps.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null) ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void ExitRoom(int roomcode) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String sql = "select Roomcode from roominfo where RoomTitle = ?;";
+		int currentNum = 0;
+		String sql = "select CurrentNum from roominfo where Roomcode = ?;";
+		try {
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, roomcode);
+			rs = ps.executeQuery();
+			currentNum = rs.getInt(1);
+			
+			if (currentNum > 1) {
+				sql = "update roominfo set CurrentNum = CurrentNum - 1 where Roomcode = ?;";
+				ps.setInt(1, roomcode);
+				ps.execute();
+			} else {
+				sql = "delete from roominfo where Roomcode = ?;";
+				ps.setInt(1, roomcode);
+				ps.execute();
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null) ps.close();
+				if (rs != null) rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public int getLastCode() {
+		int code = 0;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String sql = "select Roomcode from roominfo;";
 		
 		try {
 			ps = conn.prepareStatement(sql);
-			ps.setString(1, t);
 			rs = ps.executeQuery();
 			
-			if (rs.next()) {
-				code = rs.getString(1);
+			while (rs.next()) {
+				code = rs.getInt(1);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -121,7 +171,7 @@ public class DBConnect {
 				e.printStackTrace();
 			}
 		}
-		
+		System.out.println(code);
 		return code;
 	}
 	
