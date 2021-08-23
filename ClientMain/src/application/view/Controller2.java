@@ -129,41 +129,32 @@ public class Controller2 implements Initializable{
 			return ;
 		}
 		
-		dc.connect();
-		roomCode = dc.getLastCode();
-		if (roomCode > -1) {
-			roomCode += 1;
-		} else { 
-			roomCode = 0;
-		}
-		dc.InsertRoominfo(roomCode, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
-		dc.close();
-		SendRoominfo(members_text.getText() + "#" + roomCode);
-		
-		chattingScene(Integer.toString(roomCode), nick_text.getText(), Integer.toString(1), members_text.getText());
-		RefreshRoomList();
-		
-		
-		
-//		Thread thread = new Thread() {
-//			public void run() {
-//				dc.connect();
-//				roomCode = dc.getLastCode();
-//				if (roomCode > -1) {
-//					roomCode += 1;
-//				} else { 
-//					roomCode = 0;
-//				}
-//				dc.InsertRoominfo(roomCode, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
-//				dc.close();
-//
-//				SendRoominfo(members_text.getText() + "#" + roomCode);
-//				RefreshRoomList();
-//			}
-//		};
-//		thread.start();
-//
+		long bt = System.currentTimeMillis();
+//		dc.connect();
+//		roomCode = dc.getLastCode();
+//		if (roomCode > -1) {
+//			roomCode += 1;
+//		} else { 
+//			roomCode = 0;
+//		}
+//		dc.InsertRoominfo(roomCode, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
+//		dc.close();
+//		SendRoominfo(members_text.getText() + "#" + roomCode);
+//		
 //		chattingScene(Integer.toString(roomCode), nick_text.getText(), Integer.toString(1), members_text.getText());
+//		RefreshRoomList();
+		
+		dc.connect();
+		roomCode = dc.InsertRoominfo(title_text.getText(), nick_text.getText(),
+				Integer.parseInt(members_text.getText()));
+		dc.close();
+		
+		SendRoominfo(members_text.getText() + "#" + roomCode);
+		RefreshRoomList();
+
+		chattingScene(Integer.toString(roomCode), nick_text.getText(), Integer.toString(1), members_text.getText());
+		long at = System.currentTimeMillis();
+		System.out.format("실행시간 : %.3f", (at - bt)/1000.0);
 	}
 	
 	// 닉네임 교체 버튼
@@ -198,7 +189,7 @@ public class Controller2 implements Initializable{
 		roomList.getItems().clear();
 
 		dc.connect();
-		String roominfo = dc.testSelect();
+		String roominfo = dc.SelectRoomInfo();
 		if (roominfo.equals("")) return;
 		dc.close();
 		
