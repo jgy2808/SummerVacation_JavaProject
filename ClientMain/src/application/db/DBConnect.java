@@ -158,7 +158,7 @@ public class DBConnect {
 	}
 	
 	public int getLastCode() {
-		int code = 0;
+		int code = -1;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		String sql = "select Roomcode from roominfo;";
@@ -166,7 +166,6 @@ public class DBConnect {
 		try {
 			ps = conn.prepareStatement(sql);
 			rs = ps.executeQuery();
-			
 			while (rs.next()) {
 				code = rs.getInt(1);
 			}
