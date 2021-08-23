@@ -5,9 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 import application.Main;
 import application.db.DBConnect;
@@ -34,12 +32,18 @@ import javafx.stage.Stage;
 
 
 public class Controller2 implements Initializable{
+	Controller3 c3 = new Controller3();
+	private DBConnect dc = new DBConnect();
+	
 	Label titleLabel;
 	Label roomMasterLabel;
 	Label memberCountLabel;
 	OutputStream os;
 	InputStream is;
 	Socket socketRoominfo;
+	
+	BorderPane pane;
+	BorderPane pane2;
 
 	@FXML
 	private ListView<BorderPane> roomList;
@@ -59,15 +63,16 @@ public class Controller2 implements Initializable{
 	private Button changebtn;
 	@FXML
 	private Button refreshbtn;
-	
-	Main scene = new Main();
-	Stage stage;
-	
-	private DBConnect dc = new DBConnect();
 
 	ObservableList<BorderPane> savedList = FXCollections.observableArrayList();
 	int checkSearch = 0;
 	int roomCode = 0;
+	
+	
+	// chattingscene method variable
+	FXMLLoader f;
+	Parent r;
+	Stage stage2;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -108,13 +113,6 @@ public class Controller2 implements Initializable{
 			e.printStackTrace();
 		}
 	}
-	
-	FXMLLoader f;
-	Parent r;
-	Stage stage2;
-	
-	BorderPane pane;
-	BorderPane pane2;
 
 	// ----------------- 방만들기 버튼 -----------------------
 	@FXML
@@ -140,43 +138,32 @@ public class Controller2 implements Initializable{
 		}
 		dc.InsertRoominfo(roomCode, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
 		dc.close();
-		
 		SendRoominfo(members_text.getText() + "#" + roomCode);
-		scene.chattingScene(Integer.toString(roomCode));
-		// ------------여기 위 까지 주석 해제
+		
+		chattingScene(Integer.toString(roomCode), nick_text.getText(), Integer.toString(1), members_text.getText());
+		RefreshRoomList();
 		
 		
 		
-//		pane = new BorderPane();
-//		pane2 = new BorderPane();
-//		String t = title_text.getText();
-//		Button btn = new Button("입장");
-//		btn.setId(Integer.toString(roomCode++));
-//		titleLabel = new Label(t + " : " + btn.getId());
-//		try {
-//			roomMasterLabel = new Label(nick_text.getText());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		memberCountLabel = new Label("1/" + members_text.getText());
-//		
-//		pane.setLeft(titleLabel);
-//		pane.setCenter(roomMasterLabel);
-//		pane2.setLeft(memberCountLabel);
-//		pane2.setRight(btn);
-//		pane.setRight(pane2);
-//		
-//		roomList.getItems().add(pane);
-////		roomList.getItems().add(title_text.getText() + " : " + members_text.getText());
-//		
-//		
-//		
-//		// 입장 버튼
-//		btn.setOnAction(arg0 -> {
-//			SendRoominfo("entry#" + btn.getId());
-////			stage = (Stage) createbtn.getScene().getWindow();
-//			scene.chattingScene(btn.getId());
-//		});
+//		Thread thread = new Thread() {
+//			public void run() {
+//				dc.connect();
+//				roomCode = dc.getLastCode();
+//				if (roomCode > -1) {
+//					roomCode += 1;
+//				} else { 
+//					roomCode = 0;
+//				}
+//				dc.InsertRoominfo(roomCode, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
+//				dc.close();
+//
+//				SendRoominfo(members_text.getText() + "#" + roomCode);
+//				RefreshRoomList();
+//			}
+//		};
+//		thread.start();
+//
+//		chattingScene(Integer.toString(roomCode), nick_text.getText(), Integer.toString(1), members_text.getText());
 	}
 	
 	// 닉네임 교체 버튼
@@ -241,12 +228,17 @@ public class Controller2 implements Initializable{
 				btn.setOnAction(event2 -> {
 					String[] memArray = memberCountLabel.getText().split("/");
 					if (Integer.parseInt(memArray[0]) < Integer.parseInt(memArray[1])){
-						SendRoominfo("entry#" + btn.getId());
-						dc.connect();
-						dc.EnterRoom(Integer.parseInt(btn.getId()));
-						dc.close();
-						// 채팅씬 열어주기 지금은 대기방 열리기로 되어있음
-						scene.chattingScene(btn.getId());
+						Thread thread = new Thread() {
+							public void run() {
+								SendRoominfo("entry#" + btn.getId());
+								dc.connect();
+								dc.EnterRoom(Integer.parseInt(btn.getId()));
+								dc.close();
+								chattingScene(btn.getId(), nick_text.getText(), roomArrayinfo[3], roomArrayinfo[4]);
+							}
+						};
+						thread.start();
+						RefreshRoomList();
 					} else {
 						Alert alert = new Alert(AlertType.WARNING);
 						alert.setTitle("Warning");
@@ -288,6 +280,27 @@ public class Controller2 implements Initializable{
 	public void search_cancel() {
 		roomList.setItems(savedList);
 		checkSearch = 0;
+	}
+	
+	public void chattingScene(String title, String nick, String curNum, String maxNum) {
+		try {
+			f = new FXMLLoader(getClass().getResource("main2.fxml"));
+			String[] s = {title, nick, curNum, maxNum};
+			r = (Parent) f.load();
+			stage2 = new Stage();
+			stage2.setScene(new Scene(r));
+			stage2.setTitle(title);
+			stage2.setUserData(s);
+			stage2.setOnCloseRequest(event -> c3.closeChattingRoom());
+			stage2.show();				// 새로운 창을 여는 코드	
+			
+//			Stage tmp = (Stage) btn.getScene().getWindow();
+//			tmp.close();		// 해당 두줄은 방입장이 기존 대기실방 닫는 코드
+		}
+		catch(IOException ex) {
+			System.out.println(ex);
+			ex.printStackTrace();
+		}
 	}
 }
 // main1 컨트롤러 달기, 리스트뷰 이름 정하기, 버튼에 함수 달기
