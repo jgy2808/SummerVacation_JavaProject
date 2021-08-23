@@ -113,12 +113,12 @@ public class Controller3 implements Initializable{
 	
 	String[] m = null;
 	public void ReceiveMessage() {
-		while(true) {
-			try {
-				is = socket.getInputStream();
-				byte[] buffer = new byte[512];
+		try {
+			is = socket.getInputStream();
+			byte[] buffer = new byte[512];
+			while (true) {
 				int length = is.read(buffer);
-				if (length == -1 ) throw new IOException();
+				if (length == -1) throw new IOException();
 				String message = new String(buffer, 0, length, "UTF-8");
 				System.out.println(message);
 				m = message.split("#");
@@ -126,17 +126,17 @@ public class Controller3 implements Initializable{
 					Platform.runLater(() -> {
 						currentNum_Label.setText(m[1]);
 					});
-				}  else {
+				} else {
 					Platform.runLater(() -> {
 						printMessage(m[0], m[1]);
 					});
 				}
-			} catch(Exception e) {
-				System.out.println("ReceiveMessage exception");
-				e.printStackTrace();
-				break;
 			}
+		} catch (Exception e) {
+			System.out.println("ReceiveMessage exception");
+			e.printStackTrace();
 		}
+
 	}
 	
 	// 메세지 보내는 부분
@@ -160,6 +160,10 @@ public class Controller3 implements Initializable{
 
 	// 채팅방에서 나올 때
 	public void closeChattingRoom() {
+		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
+		dc.connect();
+		dc.ExitRoom(Integer.parseInt(tmp.getTitle()));
+		dc.close();
 		try {
 			if (socket != null && !socket.isClosed()) {
 				socket.close();
@@ -184,13 +188,9 @@ public class Controller3 implements Initializable{
 		p.setBottom(d);
 		chat_list.getItems().add(p);
 	}
-	
 	@FXML
 	public void exit_btn() throws IOException {
 		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
-		dc.connect();
-		dc.ExitRoom(Integer.parseInt(tmp.getTitle()));
-		dc.close();
 		closeChattingRoom();
 		System.out.println("1. exit_btn");
 		tmp.close();
