@@ -85,14 +85,6 @@ public class Controller3 implements Initializable{
 		thread = new Thread() {
 			public void run() {
 				try {
-//					Platform.runLater(() -> {
-//						dc.connect();
-//						Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
-//						
-//						int roomcode = Integer.parseInt(tmp.getTitle());
-//						maxNum_Label.setText(Integer.toString(dc.getMaxNum(roomcode)));
-//						dc.close();
-//					});
 //					socket = new Socket("211.202.61.16", 9999);
 					socket = new Socket("127.0.0.1", 9999);
 //					os = socket.getOutputStream();
@@ -162,8 +154,13 @@ public class Controller3 implements Initializable{
 
 	// 채팅방에서 나올 때
 	public void closeChattingRoom() {
+		int roomcode = Integer.parseInt(((Stage)exitBtnComponent.getScene().getWindow()).getTitle());
 		dc.connect();
-		dc.ExitRoom(Integer.parseInt(((Stage)exitBtnComponent.getScene().getWindow()).getTitle()));
+		if (Integer.parseInt(currentNum_Label.getText()) > 1) {
+			dc.ExitRoom(roomcode);
+		} else {
+			dc.DeleteRoom(roomcode);
+		}
 		dc.close();
 		try {
 			if (socket != null && !socket.isClosed()) {
