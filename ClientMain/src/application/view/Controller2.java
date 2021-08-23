@@ -130,20 +130,23 @@ public class Controller2 implements Initializable{
 			alert.showAndWait();
 			return ;
 		}
-//		
+		
 		dc.connect();
 		roomCode = dc.getLastCode();
-		if (roomCode > 0) {
+		if (roomCode > -1) {
 			roomCode += 1;
+		} else { 
+			roomCode = 0;
 		}
 		dc.InsertRoominfo(roomCode, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
 		dc.close();
-//		
-//		System.out.println("testFunc end");
 		
 		SendRoominfo(members_text.getText() + "#" + roomCode);
 		scene.chattingScene(Integer.toString(roomCode));
-//		
+		// ------------여기 위 까지 주석 해제
+		
+		
+		
 //		pane = new BorderPane();
 //		pane2 = new BorderPane();
 //		String t = title_text.getText();
