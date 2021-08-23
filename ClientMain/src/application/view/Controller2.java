@@ -219,16 +219,11 @@ public class Controller2 implements Initializable{
 				btn.setOnAction(event2 -> {
 					String[] memArray = memberCountLabel.getText().split("/");
 					if (Integer.parseInt(memArray[0]) < Integer.parseInt(memArray[1])){
-						Thread thread = new Thread() {
-							public void run() {
-								SendRoominfo("entry#" + btn.getId());
-								dc.connect();
-								dc.EnterRoom(Integer.parseInt(btn.getId()));
-								dc.close();
-								chattingScene(btn.getId(), nick_text.getText(), roomArrayinfo[3], roomArrayinfo[4]);
-							}
-						};
-						thread.start();
+						SendRoominfo("entry#" + btn.getId());
+						dc.connect();
+						dc.EnterRoom(Integer.parseInt(btn.getId()));
+						dc.close();
+						chattingScene(btn.getId(), nick_text.getText(), roomArrayinfo[3], roomArrayinfo[4]);
 						RefreshRoomList();
 					} else {
 						Alert alert = new Alert(AlertType.WARNING);
