@@ -24,11 +24,15 @@ public class ConsoleChatServer extends Thread{
 		int count; //몇 바이트의 글을 받았는지 카운트하는 변수
 		
 		try {
+//			for (Socket s : room.get(rNum)) {
+//				OutputStream os = s.getOutputStream();
+//				os.write(("입장하셨습니다.# ").getBytes("UTF-8"));
+//				os.flush();
+//			}
+			byte[] buffer = ("inout#" + Integer.toString(room.get(rNum).size())).getBytes("UTF-8");
 			for (Socket s : room.get(rNum)) {
 				toClient = s.getOutputStream();
-				byte[] buffer = ("inout#" + Integer.toString(room.get(rNum).size())).getBytes("UTF-8");
-				int length = buffer.length;
-				toClient.write(buffer, 0, length);
+				toClient.write(buffer);
 				toClient.flush();
 			}
 			System.out.println(sock+ " : chat socket 연결됨 -> " + sock.getPort());
@@ -58,7 +62,7 @@ public class ConsoleChatServer extends Thread{
 							toClient.flush();
 						}
 					}
-					remove(sock, rNum);
+					Remove_client(sock, rNum);
 					sock.close();
 					//접속 후 나가버린 클라이언트인 경우 ArrayList에서 제거
 				}
@@ -92,13 +96,13 @@ public class ConsoleChatServer extends Thread{
 								clients = room.remove(rcArray[1]);
 								clients.add(socket);
 								room.put(rcArray[1], clients);
+								openChatServer(socket, rcArray[1]);
 								for (String key : room.keySet()) {
 									for (Socket s : room.get(key)) {
-										System.out.print(s.getPort() + "(" + room.get(key).size() + ")" + ", ");
+										System.out.print(s.getPort() + ", ");
 									}
-									System.out.println();
+									System.out.println("(" + room.get(key).size() + ")");
 								}
-								openChatServer(socket, rcArray[1]);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -114,10 +118,9 @@ public class ConsoleChatServer extends Thread{
 								clients = new ArrayList<>(Integer.parseInt(rcArray[0]));
 								clients.add(socket);
 								room.put(rcArray[1], clients);
-								System.out.println(room.size());
 								for (String key : room.keySet()) {
 									for (Socket s : room.get(key)) {
-										System.out.print(s.getPort() + "(" + room.get(key).size() + ")" + ", ");
+										System.out.print(s.getPort() + ", ");
 									}
 									System.out.println();
 								}
@@ -137,6 +140,7 @@ public class ConsoleChatServer extends Thread{
 			try {
 				System.out.println(sock.getPort() + " : 연결 종료(방소켓)");
 				sock.close();
+				Remove_rClient(sock);
 			} catch (IOException e) { 
 				e.printStackTrace(); 
 			}
@@ -188,10 +192,18 @@ public class ConsoleChatServer extends Thread{
 
 	// ArrayList에서 클라이언트 소켓 제거
 	// 접속 후 나가버리는 경우 쓸때 오류가 발생
-	public void remove(Socket socket, String roomCode) {
+	public void Remove_client(Socket socket, String roomCode) {
 		for (Socket s : room.get(roomCode)) {
 			if (socket == s) {
 				ConsoleChatServer.clients.remove(socket);// 배열의 remove메서드임 이건
+				break;
+			}
+		}
+	}
+	public void Remove_rClient(Socket socket) {
+		for (Socket s : rclients) {
+			if (socket == s) {
+				rclients.remove(socket);
 				break;
 			}
 		}

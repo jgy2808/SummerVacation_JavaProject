@@ -11,10 +11,7 @@ import application.db.DBConnect;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -53,14 +50,6 @@ public class Controller3 implements Initializable{
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		try {
 			openChattingRoom();
-			Platform.runLater(() -> {
-				dc.connect();
-				Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
-				
-				int roomcode = Integer.parseInt(tmp.getTitle());
-				maxNum_Label.setText(Integer.toString(dc.getMaxNum(roomcode)));
-				dc.close();
-			});
 			
 			chat_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
 			    @Override
@@ -89,16 +78,20 @@ public class Controller3 implements Initializable{
 	// 실사용 하지 않는 컨트롤러
 	Thread thread;
 	public void openChattingRoom() {
+		Platform.runLater(() -> {
+			String[] s = (String[]) chat_list.getScene().getWindow().getUserData();
+			maxNum_Label.setText(s[3]);
+		});
 		thread = new Thread() {
 			public void run() {
 				try {
 //					socket = new Socket("211.202.61.16", 9999);
 					socket = new Socket("127.0.0.1", 9999);
-					os = socket.getOutputStream();
-					String enterMessage =  nick + "님이 입장하셨습니다.# ";
-					byte[] buffer = enterMessage.getBytes("UTF-8");
-					os.write(buffer);
-					os.flush();
+//					os = socket.getOutputStream();
+//					String enterMessage =  nick + "님이 입장하셨습니다.# ";
+//					byte[] buffer = enterMessage.getBytes("UTF-8");
+//					os.write(buffer);
+//					os.flush();
 					
 					ReceiveMessage();
 				} catch(Exception e) {
@@ -113,30 +106,31 @@ public class Controller3 implements Initializable{
 	
 	String[] m = null;
 	public void ReceiveMessage() {
-		while(true) {
-			try {
-				is = socket.getInputStream();
-				byte[] buffer = new byte[512];
+		try {
+			is = socket.getInputStream();
+			byte[] buffer = new byte[512];
+			while (true) {
 				int length = is.read(buffer);
-				if (length == -1 ) throw new IOException();
+				if (length == -1) throw new IOException();
 				String message = new String(buffer, 0, length, "UTF-8");
 				System.out.println(message);
 				m = message.split("#");
 				if (m[0].equals("inout")) {
 					Platform.runLater(() -> {
+						System.out.println("inout if true -> " + m[1]);
 						currentNum_Label.setText(m[1]);
 					});
-				}  else {
+				} else {
 					Platform.runLater(() -> {
 						printMessage(m[0], m[1]);
 					});
 				}
-			} catch(Exception e) {
-				System.out.println("ReceiveMessage exception");
-				e.printStackTrace();
-				break;
 			}
+		} catch (Exception e) {
+			System.out.println("ReceiveMessage exception");
+			e.printStackTrace();
 		}
+
 	}
 	
 	// 메세지 보내는 부분
@@ -160,6 +154,14 @@ public class Controller3 implements Initializable{
 
 	// 채팅방에서 나올 때
 	public void closeChattingRoom() {
+		int roomcode = Integer.parseInt(((Stage)exitBtnComponent.getScene().getWindow()).getTitle());
+		dc.connect();
+		if (Integer.parseInt(currentNum_Label.getText()) > 1) {
+			dc.ExitRoom(roomcode);
+		} else {
+			dc.DeleteRoom(roomcode);
+		}
+		dc.close();
 		try {
 			if (socket != null && !socket.isClosed()) {
 				socket.close();
@@ -184,13 +186,9 @@ public class Controller3 implements Initializable{
 		p.setBottom(d);
 		chat_list.getItems().add(p);
 	}
-	
 	@FXML
 	public void exit_btn() throws IOException {
 		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
-		dc.connect();
-		dc.ExitRoom(Integer.parseInt(tmp.getTitle()));
-		dc.close();
 		closeChattingRoom();
 		System.out.println("1. exit_btn");
 		tmp.close();
