@@ -67,7 +67,7 @@
                      <children>
                         <HBox prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #000000; -fx-opacity: 0.7;">
                            <children>
-                              <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="200.0" text="Title" textAlignment="CENTER" textFill="WHITE">
+                              <Label fx:id="title_Label" alignment="CENTER" contentDisplay="CENTER" prefWidth="200.0" text="Title" textAlignment="CENTER" textFill="WHITE">
                                  <font>
                                     <Font size="26.0" />
                                  </font>
