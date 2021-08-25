@@ -160,10 +160,10 @@ public class Controller2 implements Initializable{
 	// 닉네임 교체 버튼
 	@FXML
 	private void changebtnOnAction(ActionEvent event) {
-//		dc.connect();
-//		dc.testDelete();
-//		System.out.println("Delete success");
-//		dc.close();
+		dc.connect();
+		dc.testDelete();
+		System.out.println("Delete success");
+		dc.close();
 	}
 	
 	// 새로고침 버튼
