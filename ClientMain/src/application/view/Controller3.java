@@ -120,28 +120,29 @@ public class Controller3 implements Initializable{
 				int length = is.read(buffer);
 				if (length == -1) throw new IOException();
 				String message = new String(buffer, 0, length, "UTF-8");
-				System.out.println(message);
+				System.out.println("message : " + message);
 				m = message.split("#");
 				if (m[0].equals("in")) {
-					// in#currentNum#nick#입장#" "
+					// message : in#currentNum#nick#입장#memArray
 					Platform.runLater(() -> {
 						currentNum_Label.setText(m[1]);
 						printMessage(m[2] + m[3], "");
-						System.out.println(m[4]);
+						System.out.println("m[4] : " + m[4]);
 						if ( m[4].charAt(0) == '[' ) {
-							System.out.println("in start [");
 							m[4] = m[4].substring(1, m[4].length() - 1);
 							String[] memArray = m[4].split(", ");
 							for (int i = memArray.length - 1; i >= 0; i--) {
 								BorderPane bp = new BorderPane();
 								Label mem = new Label(memArray[i]);
+								mem.setUserData(memArray[i]);
 								bp.setLeft(mem);
 								member_list.getItems().add(bp);
+//								System.out.println(member_list.getItems().get(i).getLeft().getUserData());
 							}
 						} else {
-							System.out.println("in no start [");
 							BorderPane bp = new BorderPane();
 							Label mem = new Label(m[4]);
+							mem.setUserData(m[4]);
 							bp.setLeft(mem);
 							member_list.getItems().add(bp);
 						}
@@ -149,9 +150,16 @@ public class Controller3 implements Initializable{
 				} else if (m[0].equals("out")) {
 					Platform.runLater(() -> {
 						currentNum_Label.setText(m[1]);
+						for (int i = 0; i < member_list.getItems().size(); i++ ) {
+							if ( m[2].equals(member_list.getItems().get(i).getLeft().getUserData()) ){
+								System.out.println("remove : " + m[2]);
+								member_list.getItems().remove(i);
+								break;
+							}
+						}
 //						member_list.getItems().
 					});
-				}else {
+				} else {
 					Platform.runLater(() -> {
 						printMessage(m[0], m[1]);
 					});
