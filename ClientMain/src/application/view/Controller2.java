@@ -31,7 +31,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 
-public class Controller2 implements Initializable{
+public class Controller2 implements Initializable {
 	Controller3 c3 = new Controller3();
 	private DBConnect dc = new DBConnect();
 	
@@ -132,7 +132,7 @@ public class Controller2 implements Initializable{
 				Integer.parseInt(members_text.getText()));
 		dc.close();
 
-		chattingScene(title_text.getText(), nick_text.getText(), members_text.getText());
+		chattingScene(Integer.toString(roomCode), title_text.getText(), nick_text.getText(), members_text.getText());
 		SendRoominfo(members_text.getText() + "#" + roomCode + "#" + nick_text.getText());
 		RefreshRoomList();
 
@@ -216,7 +216,7 @@ public class Controller2 implements Initializable{
 					dc.connect();
 					int enterReturnVal = dc.EnterRoom(Integer.parseInt(btn.getId()));
 					if ( enterReturnVal == 1 ){
-						chattingScene(roomArrayinfo[1], nick_text.getText(), roomArrayinfo[4]);
+						chattingScene(btn.getId(), roomArrayinfo[1], nick_text.getText(), roomArrayinfo[4]);
 						SendRoominfo("entry#" + btn.getId() + "#" + nick_text.getText());
 						RefreshRoomList();
 					} else if (enterReturnVal == 2){
@@ -270,13 +270,13 @@ public class Controller2 implements Initializable{
 		checkSearch = 0;
 	}
 	
-	public void chattingScene(String title, String nick, String maxNum) {
+	public void chattingScene(String code, String title, String nick, String maxNum) {
 		try {
 			f = new FXMLLoader(getClass().getResource("main2.fxml"));
 			r = (Parent) f.load();
 			
 			c3 = f.getController();
-			c3.DataInit(title, nick, maxNum);;
+			c3.DataInit(code, title, nick, maxNum);;
 
 			stage2 = new Stage();
 			stage2.setScene(new Scene(r));
