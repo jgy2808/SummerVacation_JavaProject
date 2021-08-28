@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
 import application.db.DBConnect;
@@ -29,10 +30,14 @@ public class Controller3 implements Initializable{
 	@FXML
 	private ListView<BorderPane> chat_list;
 	@FXML
+	private ListView<BorderPane> member_list;
+	@FXML
 	private Label currentNum_Label;
 	@FXML
 	private Label maxNum_Label;
-
+	@FXML
+	private Label title_Label;
+	
 	BorderPane p = new BorderPane();
 	BorderPane u = new BorderPane();
 	BorderPane d = new BorderPane();
@@ -42,7 +47,9 @@ public class Controller3 implements Initializable{
 	Socket socket;
 	OutputStream os;
 	InputStream is;
-	String nick = "nickname"; //(Controller2.nick_text).getText();
+	String[] s;
+	String nick;
+	private int roomCode;
 	
 	private DBConnect dc = new DBConnect();
 	
@@ -73,31 +80,31 @@ public class Controller3 implements Initializable{
 			e.printStackTrace();
 			closeChattingRoom();
 		}
-		
 	}
+	
+	public void DataInit(String title, String nick, String maxNum) {
+		this.title_Label.setText(title);
+		this.nick = nick;
+		this.maxNum_Label.setText(maxNum);
+	}
+
 	// 실사용 하지 않는 컨트롤러
 	Thread thread;
 	public void openChattingRoom() {
-		Platform.runLater(() -> {
-			String[] s = (String[]) chat_list.getScene().getWindow().getUserData();
-			maxNum_Label.setText(s[3]);
-		});
+		
 		thread = new Thread() {
 			public void run() {
 				try {
 //					socket = new Socket("211.202.61.16", 9999);
 					socket = new Socket("127.0.0.1", 9999);
-//					os = socket.getOutputStream();
-//					String enterMessage =  nick + "님이 입장하셨습니다.# ";
-//					byte[] buffer = enterMessage.getBytes("UTF-8");
-//					os.write(buffer);
-//					os.flush();
+					dc.connect();
+					
 					
 					ReceiveMessage();
-				} catch(Exception e) {
+				} catch (Exception e) {
 					System.out.println("openChattingRoom exception");
-					closeChattingRoom();
 					e.printStackTrace();
+					closeChattingRoom();
 				}
 			}
 		};
@@ -115,12 +122,36 @@ public class Controller3 implements Initializable{
 				String message = new String(buffer, 0, length, "UTF-8");
 				System.out.println(message);
 				m = message.split("#");
-				if (m[0].equals("inout")) {
+				if (m[0].equals("in")) {
+					// in#currentNum#nick#입장#" "
 					Platform.runLater(() -> {
-						System.out.println("inout if true -> " + m[1]);
 						currentNum_Label.setText(m[1]);
+						printMessage(m[2] + m[3], "");
+						System.out.println(m[4]);
+						if ( m[4].charAt(0) == '[' ) {
+							System.out.println("in start [");
+							m[4] = m[4].substring(1, m[4].length() - 1);
+							String[] memArray = m[4].split(", ");
+							for (int i = memArray.length - 1; i >= 0; i--) {
+								BorderPane bp = new BorderPane();
+								Label mem = new Label(memArray[i]);
+								bp.setLeft(mem);
+								member_list.getItems().add(bp);
+							}
+						} else {
+							System.out.println("in no start [");
+							BorderPane bp = new BorderPane();
+							Label mem = new Label(m[4]);
+							bp.setLeft(mem);
+							member_list.getItems().add(bp);
+						}
 					});
-				} else {
+				} else if (m[0].equals("out")) {
+					Platform.runLater(() -> {
+						currentNum_Label.setText(m[1]);
+//						member_list.getItems().
+					});
+				}else {
 					Platform.runLater(() -> {
 						printMessage(m[0], m[1]);
 					});
@@ -154,12 +185,12 @@ public class Controller3 implements Initializable{
 
 	// 채팅방에서 나올 때
 	public void closeChattingRoom() {
-		int roomcode = Integer.parseInt(((Stage)exitBtnComponent.getScene().getWindow()).getTitle());
+		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
 		dc.connect();
 		if (Integer.parseInt(currentNum_Label.getText()) > 1) {
-			dc.ExitRoom(roomcode);
+			dc.ExitRoom(roomCode);
 		} else {
-			dc.DeleteRoom(roomcode);
+			dc.DeleteRoom(roomCode);
 		}
 		dc.close();
 		try {
@@ -171,6 +202,7 @@ public class Controller3 implements Initializable{
 			System.out.println("closeChattingRoom exception");
 			e.printStackTrace();
 		}
+		tmp.close();
 	}
 
 	
@@ -188,10 +220,7 @@ public class Controller3 implements Initializable{
 	}
 	@FXML
 	public void exit_btn() throws IOException {
-		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
 		closeChattingRoom();
-		System.out.println("1. exit_btn");
-		tmp.close();
 	}
 	
 	@FXML

@@ -117,23 +117,52 @@ public class DBConnect {
 		}
 		return roominfo;
 	}
-	
-	public void EnterRoom(int roomcode) {
+	// 방에 입장하기 -> 방의 인원이 꽉 차지 않았는가를 체크한 후 만족하면 입장 성공 return 1 -> 방의 인원을 찾을 수 없다면 존재하지 않는 방 -> return 2;
+	// 둘 중 하나라도 만족하지 않으면 return 0;
+	// Controller2 에서 입장 버튼 눌렀을 때 이 함수의 return 값을 이용해서 입장할 지 안할지 판별
+	public int EnterRoom(int roomcode) {
 		PreparedStatement ps = null;
-		String sql = "update roominfo set CurrentNum = (CurrentNum+1) where Roomcode = ?;";
+		ResultSet rs = null;
+		String sql;
 		try {
+			sql = "select CurrentNum, MaxNum from roominfo where Roomcode = ?;";
 			ps = conn.prepareStatement(sql);
 			ps.setInt(1, roomcode);
-			ps.execute();
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				if (rs.getInt(1) < rs.getInt(2)) {
+					ps.close();
+					sql = "update roominfo set CurrentNum = (CurrentNum+1) where Roomcode = ?;";
+					ps = conn.prepareStatement(sql);
+					ps.setInt(1, roomcode);
+					ps.execute();
+					ps.close();
+					rs.close();
+					return 1;
+				} else { 
+					// 방이 꽉 찼을 때
+					ps.close();
+					rs.close();
+					return 2;
+				}
+			} else {
+				// 방이 존재하지 않을 때
+				ps.close();
+				rs.close();
+				return 0;
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			try {
 				if (ps != null) ps.close();
+				if (rs != null) rs.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("EnterRoom 불완전 종료");
+		return 0;
 	}
 	
 	public void DeleteRoom(int roomcode) {

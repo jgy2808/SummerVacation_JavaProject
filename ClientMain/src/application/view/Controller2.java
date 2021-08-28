@@ -78,7 +78,6 @@ public class Controller2 implements Initializable{
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
 		try {
-			// 서버에 방 리스트 정보 수신을 요청해야함 -> 함수를 실행시켜놓고 있으면 
 			openWaitingRoom();
 			RefreshRoomList();
 			
@@ -117,9 +116,8 @@ public class Controller2 implements Initializable{
 	// ----------------- 방만들기 버튼 -----------------------
 	@FXML
 	private void testFunc(ActionEvent event) {
-		// 대기실에 room list띄워주는건 initialize나 refresh 버튼
-		
-		if (title_text.getText().equals("") || nick_text.getText().equals("") || members_text.getText().equals("")) {
+		if (title_text.getText().equals("") || nick_text.getText().equals("") || members_text.getText().equals("") || 
+				(members_text.getText().charAt(0) < '2' || members_text.getText().charAt(0) > '9')) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Warning");
 			alert.setHeaderText("방만들기를 할 수 없습니다.");
@@ -129,41 +127,27 @@ public class Controller2 implements Initializable{
 			return ;
 		}
 		
-		long bt = System.currentTimeMillis();
-//		dc.connect();
-//		roomCode = dc.getLastCode();
-//		if (roomCode > -1) {
-//			roomCode += 1;
-//		} else { 
-//			roomCode = 0;
-//		}
-//		dc.InsertRoominfo(roomCode, title_text.getText(), nick_text.getText(), Integer.parseInt(members_text.getText()));
-//		dc.close();
-//		SendRoominfo(members_text.getText() + "#" + roomCode);
-//		
-//		chattingScene(Integer.toString(roomCode), nick_text.getText(), Integer.toString(1), members_text.getText());
-//		RefreshRoomList();
-		
 		dc.connect();
 		roomCode = dc.InsertRoominfo(title_text.getText(), nick_text.getText(),
 				Integer.parseInt(members_text.getText()));
 		dc.close();
-		
-		SendRoominfo(members_text.getText() + "#" + roomCode);
+
+		chattingScene(title_text.getText(), nick_text.getText(), members_text.getText());
+		SendRoominfo(members_text.getText() + "#" + roomCode + "#" + nick_text.getText());
 		RefreshRoomList();
 
-		chattingScene(Integer.toString(roomCode), nick_text.getText(), Integer.toString(1), members_text.getText());
-		long at = System.currentTimeMillis();
-		System.out.format("실행시간 : %.3f", (at - bt)/1000.0);
+		title_text.setText("");
+		members_text.setText("");
+		nick_text.setText("");
 	}
 	
 	// 닉네임 교체 버튼
 	@FXML
 	private void changebtnOnAction(ActionEvent event) {
-//		dc.connect();
-//		dc.testDelete();
-//		System.out.println("Delete success");
-//		dc.close();
+		dc.connect();
+		dc.testDelete();
+		System.out.println("Delete success");
+		dc.close();
 	}
 	
 	// 새로고침 버튼
@@ -183,6 +167,8 @@ public class Controller2 implements Initializable{
 			e.printStackTrace();
 			closeWaitingRoom();
 		}
+//		String s = (String)(roomList.getScene().getWindow()).getUserData();
+//		nick_text.setText(s);
 	}
 	
 	public void RefreshRoomList() {
@@ -217,22 +203,37 @@ public class Controller2 implements Initializable{
 
 				roomList.getItems().add(pane);
 				btn.setOnAction(event2 -> {
-					String[] memArray = memberCountLabel.getText().split("/");
-					if (Integer.parseInt(memArray[0]) < Integer.parseInt(memArray[1])){
-						SendRoominfo("entry#" + btn.getId());
-						dc.connect();
-						dc.EnterRoom(Integer.parseInt(btn.getId()));
-						dc.close();
-						chattingScene(btn.getId(), nick_text.getText(), roomArrayinfo[3], roomArrayinfo[4]);
+					if (nick_text.getText().equals("")) {
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setTitle("Warning");
+						alert.setHeaderText("입장 할 수 없습니다.");
+						alert.setContentText("닉네임을 입력해주세요!");
+
+						alert.showAndWait();
+						return ;
+					}
+					dc.connect();
+					int enterReturnVal = dc.EnterRoom(Integer.parseInt(btn.getId()));
+					if ( enterReturnVal == 1 ){
+						chattingScene(roomArrayinfo[1], nick_text.getText(), roomArrayinfo[4]);
+						SendRoominfo("entry#" + btn.getId() + "#" + nick_text.getText());
 						RefreshRoomList();
-					} else {
+					} else if (enterReturnVal == 2){
 						Alert alert = new Alert(AlertType.WARNING);
 						alert.setTitle("Warning");
 						alert.setHeaderText("방에 입장할 수 없습니다.");
 						alert.setContentText("인원수가 꽉 찼습니다!");
 						alert.showAndWait();
 						return ;
+					} else {
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setTitle("Warning");
+						alert.setHeaderText("방에 입장할 수 없습니다.");
+						alert.setContentText("방이 존재하지 않습니다!");
+						alert.showAndWait();
+						return ;
 					}
+					dc.close();
 				});
 			});
 		}
@@ -268,15 +269,17 @@ public class Controller2 implements Initializable{
 		checkSearch = 0;
 	}
 	
-	public void chattingScene(String title, String nick, String curNum, String maxNum) {
+	public void chattingScene(String title, String nick, String maxNum) {
 		try {
 			f = new FXMLLoader(getClass().getResource("main2.fxml"));
-			String[] s = {title, nick, curNum, maxNum};
 			r = (Parent) f.load();
+			
+			c3 = f.getController();
+			c3.DataInit(title, nick, maxNum);;
+
 			stage2 = new Stage();
 			stage2.setScene(new Scene(r));
 			stage2.setTitle(title);
-			stage2.setUserData(s);
 			stage2.setOnCloseRequest(event -> c3.closeChattingRoom());
 			stage2.show();				// 새로운 창을 여는 코드	
 			
