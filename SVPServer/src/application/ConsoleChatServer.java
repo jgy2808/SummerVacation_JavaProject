@@ -25,21 +25,22 @@ public class ConsoleChatServer extends Thread{
 		OutputStream toClient = null;
 		byte[] buf = new byte[1024];
 		int count; //몇 바이트의 글을 받았는지 카운트하는 변수
+		String currentNum = Integer.toString(room.get(rNum).size());
+		String myNick = room.get(rNum).get(sock);
+		String enterInfo = "in#" + currentNum + "#" + myNick + "#" + "님이 입장하셨습니다." + "#";
 
 		try {
 			// 입장 할 때
 			// 입장하는 나 자신에게는 나 포함 방의 모든 nick을 모두 보내기 -> member_list를 위해서
 			// 입장해있는 다른 멤버들에겐 입장하는 나의 nick만 보내기
 			// inout#currentNum#nick
-			String currentNum = Integer.toString(room.get(rNum).size());
-			String myNick = room.get(rNum).get(sock);
-			String enterInfo = "in#" + currentNum + "#" + myNick + "#" + "님이 입장하셨습니다." + "#";
 			
+			// 방만들기 또는 입장했들 때 내 화면에 member list를 보여주기 위함
 			byte[] buffer = (enterInfo + room.get(rNum).values()).getBytes("UTF-8");
 			toClient = sock.getOutputStream();
 			toClient.write(buffer);
 			toClient.flush();
-			
+			// 누군가 입장했을 때 그 입장한 nick을 member list에 추가하기 위함
 			for (Socket s : room.get(rNum).keySet()) {
 				if (s != sock) {
 					buffer = (enterInfo + myNick).getBytes("UTF-8");
@@ -69,7 +70,7 @@ public class ConsoleChatServer extends Thread{
 					for(Socket s : room.get(rNum).keySet()) {
 						if(sock != s) {
 							toClient = s.getOutputStream();
-							buf = ("out#" + Integer.toString(room.get(rNum).size() - 1) + "#" + room.get(rNum).get(sock)).getBytes("UTF-8");
+							buf = ("out#" + Integer.toString(room.get(rNum).size() - 1) + "#" + myNick).getBytes("UTF-8");
 							toClient.write(buf);
 							toClient.flush();
 						}
