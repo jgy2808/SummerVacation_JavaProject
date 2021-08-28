@@ -82,7 +82,8 @@ public class Controller3 implements Initializable{
 		}
 	}
 	
-	public void DataInit(String title, String nick, String maxNum) {
+	public void DataInit(String code, String title, String nick, String maxNum) {
+		this.roomCode = Integer.parseInt(code);
 		this.title_Label.setText(title);
 		this.nick = nick;
 		this.maxNum_Label.setText(maxNum);
