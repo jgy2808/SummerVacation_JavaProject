@@ -116,7 +116,8 @@ public class Controller2 implements Initializable{
 	// ----------------- 방만들기 버튼 -----------------------
 	@FXML
 	private void testFunc(ActionEvent event) {
-		if (title_text.getText().equals("") || nick_text.getText().equals("") || members_text.getText().equals("")) {
+		if (title_text.getText().equals("") || nick_text.getText().equals("") || members_text.getText().equals("") || 
+				(members_text.getText().charAt(0) < '2' || members_text.getText().charAt(0) > '9')) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Warning");
 			alert.setHeaderText("방만들기를 할 수 없습니다.");
@@ -130,11 +131,11 @@ public class Controller2 implements Initializable{
 		roomCode = dc.InsertRoominfo(title_text.getText(), nick_text.getText(),
 				Integer.parseInt(members_text.getText()));
 		dc.close();
-		
-		SendRoominfo(members_text.getText() + "#" + roomCode);
-		RefreshRoomList();
 
 		chattingScene(title_text.getText(), nick_text.getText(), members_text.getText());
+		SendRoominfo(members_text.getText() + "#" + roomCode + "#" + nick_text.getText());
+		RefreshRoomList();
+
 		title_text.setText("");
 		members_text.setText("");
 		nick_text.setText("");
@@ -202,12 +203,21 @@ public class Controller2 implements Initializable{
 
 				roomList.getItems().add(pane);
 				btn.setOnAction(event2 -> {
+					if (nick_text.getText().equals("")) {
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setTitle("Warning");
+						alert.setHeaderText("입장 할 수 없습니다.");
+						alert.setContentText("닉네임을 입력해주세요!");
+
+						alert.showAndWait();
+						return ;
+					}
 					dc.connect();
 					int enterReturnVal = dc.EnterRoom(Integer.parseInt(btn.getId()));
 					if ( enterReturnVal == 1 ){
-						SendRoominfo("entry#" + btn.getId());
+						chattingScene(roomArrayinfo[1], nick_text.getText(), roomArrayinfo[4]);
+						SendRoominfo("entry#" + btn.getId() + "#" + nick_text.getText());
 						RefreshRoomList();
-						chattingScene(btn.getId(), nick_text.getText(), roomArrayinfo[4]);
 					} else if (enterReturnVal == 2){
 						Alert alert = new Alert(AlertType.WARNING);
 						alert.setTitle("Warning");
@@ -262,12 +272,14 @@ public class Controller2 implements Initializable{
 	public void chattingScene(String title, String nick, String maxNum) {
 		try {
 			f = new FXMLLoader(getClass().getResource("main2.fxml"));
-			String[] s = {title, nick, maxNum};
 			r = (Parent) f.load();
+			
+			c3 = f.getController();
+			c3.DataInit(title, nick, maxNum);;
+
 			stage2 = new Stage();
 			stage2.setScene(new Scene(r));
 			stage2.setTitle(title);
-			stage2.setUserData(s);
 			stage2.setOnCloseRequest(event -> c3.closeChattingRoom());
 			stage2.show();				// 새로운 창을 여는 코드	
 			
