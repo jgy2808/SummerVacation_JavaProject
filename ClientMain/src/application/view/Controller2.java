@@ -112,7 +112,7 @@ public class Controller2 implements Initializable{
 			e.printStackTrace();
 		}
 	}
-
+	
 	// ----------------- 방만들기 버튼 -----------------------
 	@FXML
 	private void testFunc(ActionEvent event) {
@@ -148,6 +148,7 @@ public class Controller2 implements Initializable{
 		dc.testDelete();
 		System.out.println("Delete success");
 		dc.close();
+		RefreshRoomList();
 	}
 	
 	// 새로고침 버튼
