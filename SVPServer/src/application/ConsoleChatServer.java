@@ -7,8 +7,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap.KeySetView;
-
 
 public class ConsoleChatServer extends Thread{
 	// room >> 0 : String : room code / 1 : HashMap : clients
@@ -170,8 +168,9 @@ public class ConsoleChatServer extends Thread{
 		
 		Thread roomThread = new Thread() {
 			public void run() {
+				ServerSocket roomserverSock = null;
 				try {
-					ServerSocket roomserverSock = new ServerSocket(8888);
+					roomserverSock = new ServerSocket(8888);
 					System.out.println(roomserverSock + " : 规 内靛 傈侩 家南 积己 肯丰");
 					while (true) {
 						Socket rclient = roomserverSock.accept();
@@ -185,6 +184,12 @@ public class ConsoleChatServer extends Thread{
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
+				} finally {
+					try {
+						roomserverSock.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 				
 			}
@@ -208,6 +213,7 @@ public class ConsoleChatServer extends Thread{
 			}
 		}
 	}
+	
 	public void Remove_rClient(Socket socket) {
 		for (Socket s : rclients) {
 			if (socket == s) {
