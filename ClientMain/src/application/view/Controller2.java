@@ -112,6 +112,10 @@ public class Controller2 implements Initializable {
 		}
 	}
 	
+	public void DataInit(String id) {
+		nick_text.setText(id);
+	}
+	
 	// ----------------- 방만들기 버튼 -----------------------
 	@FXML
 	private void testFunc(ActionEvent event) {
