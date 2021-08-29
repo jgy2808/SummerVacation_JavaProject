@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import application.Main;
 import application.db.DBConnect;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -276,7 +275,7 @@ public class Controller2 implements Initializable {
 			r = (Parent) f.load();
 			
 			c3 = f.getController();
-			c3.DataInit(code, title, nick, maxNum);;
+			c3.DataInit(code, title, nick, maxNum);
 
 			stage2 = new Stage();
 			stage2.setScene(new Scene(r));
