@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
 import application.db.DBConnect;
@@ -82,7 +81,8 @@ public class Controller3 implements Initializable{
 		}
 	}
 	
-	public void DataInit(String title, String nick, String maxNum) {
+	public void DataInit(String code, String title, String nick, String maxNum) {
+		this.roomCode = Integer.parseInt(code);
 		this.title_Label.setText(title);
 		this.nick = nick;
 		this.maxNum_Label.setText(maxNum);
@@ -96,7 +96,7 @@ public class Controller3 implements Initializable{
 			public void run() {
 				try {
 //					socket = new Socket("211.202.61.16", 9999);
-					socket = new Socket("127.0.0.1", 9999);
+					socket = new Socket("192.168.35.213", 9999);
 					dc.connect();
 					
 					
@@ -120,28 +120,29 @@ public class Controller3 implements Initializable{
 				int length = is.read(buffer);
 				if (length == -1) throw new IOException();
 				String message = new String(buffer, 0, length, "UTF-8");
-				System.out.println(message);
+				System.out.println("message : " + message);
 				m = message.split("#");
 				if (m[0].equals("in")) {
-					// in#currentNum#nick#입장#" "
+					// message : in#currentNum#nick#입장#memArray
 					Platform.runLater(() -> {
 						currentNum_Label.setText(m[1]);
 						printMessage(m[2] + m[3], "");
-						System.out.println(m[4]);
+						System.out.println("m[4] : " + m[4]);
 						if ( m[4].charAt(0) == '[' ) {
-							System.out.println("in start [");
 							m[4] = m[4].substring(1, m[4].length() - 1);
 							String[] memArray = m[4].split(", ");
 							for (int i = memArray.length - 1; i >= 0; i--) {
 								BorderPane bp = new BorderPane();
 								Label mem = new Label(memArray[i]);
+								mem.setUserData(memArray[i]);
 								bp.setLeft(mem);
 								member_list.getItems().add(bp);
+//								System.out.println(member_list.getItems().get(i).getLeft().getUserData());
 							}
 						} else {
-							System.out.println("in no start [");
 							BorderPane bp = new BorderPane();
 							Label mem = new Label(m[4]);
+							mem.setUserData(m[4]);
 							bp.setLeft(mem);
 							member_list.getItems().add(bp);
 						}
@@ -149,9 +150,16 @@ public class Controller3 implements Initializable{
 				} else if (m[0].equals("out")) {
 					Platform.runLater(() -> {
 						currentNum_Label.setText(m[1]);
+						for (int i = 0; i < member_list.getItems().size(); i++ ) {
+							if ( m[2].equals(member_list.getItems().get(i).getLeft().getUserData()) ){
+								System.out.println("remove : " + m[2]);
+								member_list.getItems().remove(i);
+								break;
+							}
+						}
 //						member_list.getItems().
 					});
-				}else {
+				} else {
 					Platform.runLater(() -> {
 						printMessage(m[0], m[1]);
 					});

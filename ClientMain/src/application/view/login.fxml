@@ -9,12 +9,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
-<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox fx:controller="application.view.LogController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #5E97A6;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" >
+<VBox fx:controller="application.view.LogController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #5A97A6;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <MenuBar>
         <menus>
@@ -37,19 +37,16 @@
       </MenuBar>
       <VBox prefHeight="200.0" prefWidth="100.0">
          <VBox.margin>
-            <Insets left="300.0" right="300.0" top="150.0" />
+            <Insets left="300.0" right="300.0" top="200.0" />
          </VBox.margin>
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Sign Up">
-               <font>
-                  <Font size="59.0" />
-               </font>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Login">
                <fill>
-                  <RadialGradient centerX="0.5111111111111111" centerY="0.5" radius="0.5348837209302325">
+                  <LinearGradient endX="1.0" endY="1.0">
                      <stops>
                         <Stop>
                            <color>
-                              <Color red="0.30263158679008484" green="0.30263158679008484" blue="0.30263158679008484" />
+                              <Color />
                            </color>
                         </Stop>
                         <Stop offset="1.0">
@@ -58,30 +55,28 @@
                            </color>
                         </Stop>
                      </stops>
-                  </RadialGradient>
+                  </LinearGradient>
                </fill>
+               <font>
+                  <Font size="73.0" />
+               </font>
                <VBox.margin>
-                  <Insets left="230.0" />
+                  <Insets left="235.0" />
                </VBox.margin>
             </Text>
-            <TextArea prefHeight="69.0" prefWidth="480.0" promptText="E-mail" fx:id="user_email">
+            <TextArea prefHeight="200.0" prefWidth="200.0" promptText="ID" fx:id="login_id">
                <VBox.margin>
-                  <Insets bottom="20.0" left="100.0" right="100.0" top="50.0" />
+                  <Insets bottom="20.0" left="100.0" right="100.0" top="20.0" />
                </VBox.margin>
             </TextArea>
-            <TextArea prefHeight="69.0" prefWidth="480.0" promptText="ID" fx:id="user_id">
-               <VBox.margin>
-                  <Insets bottom="20.0" left="100.0" right="100.0" />
-               </VBox.margin>
-            </TextArea>
-            <TextArea prefHeight="200.0" prefWidth="200.0" promptText="PW" fx:id="user_pw">
+            <TextArea prefHeight="200.0" prefWidth="200.0" promptText="PW" fx:id="login_pw">
                <VBox.margin>
                   <Insets bottom="50.0" left="100.0" right="100.0" />
                </VBox.margin>
             </TextArea>
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button mnemonicParsing="false" prefHeight="53.0" prefWidth="74.0" text="가입" onAction="#signup">
+                  <Button mnemonicParsing="false" prefHeight="53.0" prefWidth="74.0" text="로그인" onAction="#login">
                      <padding>
                         <Insets bottom="15.0" top="15.0" />
                      </padding>
@@ -89,7 +84,7 @@
                         <Insets left="250.0" right="25.0" />
                      </HBox.margin>
                   </Button>
-                  <Button mnemonicParsing="false" prefHeight="53.0" prefWidth="74.0" text="취소" onAction="#goLogin">
+                  <Button mnemonicParsing="false" prefHeight="53.0" prefWidth="74.0" text="회원가입" onAction="#goSignup">
                      <padding>
                         <Insets bottom="15.0" top="15.0" />
                      </padding>

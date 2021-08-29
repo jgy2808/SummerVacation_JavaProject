@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import application.Main;
 import application.db.DBConnect;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -31,7 +30,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 
-public class Controller2 implements Initializable{
+public class Controller2 implements Initializable {
 	Controller3 c3 = new Controller3();
 	private DBConnect dc = new DBConnect();
 	
@@ -112,7 +111,11 @@ public class Controller2 implements Initializable{
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void DataInit(String id) {
+		nick_text.setText(id);
+	}
+	
 	// ----------------- 방만들기 버튼 -----------------------
 	@FXML
 	private void testFunc(ActionEvent event) {
@@ -132,7 +135,7 @@ public class Controller2 implements Initializable{
 				Integer.parseInt(members_text.getText()));
 		dc.close();
 
-		chattingScene(title_text.getText(), nick_text.getText(), members_text.getText());
+		chattingScene(Integer.toString(roomCode), title_text.getText(), nick_text.getText(), members_text.getText());
 		SendRoominfo(members_text.getText() + "#" + roomCode + "#" + nick_text.getText());
 		RefreshRoomList();
 
@@ -148,6 +151,7 @@ public class Controller2 implements Initializable{
 		dc.testDelete();
 		System.out.println("Delete success");
 		dc.close();
+		RefreshRoomList();
 	}
 	
 	// 새로고침 버튼
@@ -160,7 +164,7 @@ public class Controller2 implements Initializable{
 
 	public void openWaitingRoom() {
 		try {
-			socketRoominfo = new Socket("127.0.0.1", 8888);
+			socketRoominfo = new Socket("192.168.35.213", 8888);
 			System.out.println("[ 대기실 socket 연결 성공 ]");
 		} catch (Exception e) {
 			System.out.println("[ 대기실 socket 연결 실패 ]");
@@ -215,7 +219,7 @@ public class Controller2 implements Initializable{
 					dc.connect();
 					int enterReturnVal = dc.EnterRoom(Integer.parseInt(btn.getId()));
 					if ( enterReturnVal == 1 ){
-						chattingScene(roomArrayinfo[1], nick_text.getText(), roomArrayinfo[4]);
+						chattingScene(btn.getId(), roomArrayinfo[1], nick_text.getText(), roomArrayinfo[4]);
 						SendRoominfo("entry#" + btn.getId() + "#" + nick_text.getText());
 						RefreshRoomList();
 					} else if (enterReturnVal == 2){
@@ -269,13 +273,13 @@ public class Controller2 implements Initializable{
 		checkSearch = 0;
 	}
 	
-	public void chattingScene(String title, String nick, String maxNum) {
+	public void chattingScene(String code, String title, String nick, String maxNum) {
 		try {
 			f = new FXMLLoader(getClass().getResource("main2.fxml"));
 			r = (Parent) f.load();
 			
 			c3 = f.getController();
-			c3.DataInit(title, nick, maxNum);;
+			c3.DataInit(code, title, nick, maxNum);
 
 			stage2 = new Stage();
 			stage2.setScene(new Scene(r));

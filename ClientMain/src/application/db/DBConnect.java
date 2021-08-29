@@ -5,6 +5,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 public class DBConnect {
 	Connection conn;
@@ -203,6 +207,86 @@ public class DBConnect {
 			}
 		}
 		System.out.println("exitroom method off");
+	}
+	
+	public int signup(String e, String i, String p) { // e = Email, i = id ,p = password
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String sql1 = "select user_pw from members where user_id = '" + i + "';";
+		try {
+			ps = conn.prepareStatement(sql1);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				Alert tmp = new Alert(AlertType.CONFIRMATION);
+				tmp.setContentText("해당 아이디가 이미 존재합니다.");
+				tmp.setHeaderText("아이디 중복");
+				tmp.setTitle("회원가입 실패");
+				tmp.show();
+				return 0;
+			} else {
+				ps.close();
+				String sql2 = "insert into members value(?,?,?);";
+				ps = conn.prepareStatement(sql2);
+				ps.setString(1, e);
+				ps.setString(2, i);
+				ps.setString(3, p);
+				ps.executeUpdate();
+				return 1;
+			}
+		} catch (SQLException se) {
+			se.printStackTrace();
+		} finally {
+			try {
+				if (ps != null) ps.close();
+				if (rs != null) rs.close();
+			} catch (SQLException se2) {
+				se2.printStackTrace();
+			}
+		}
+		return 0;
+	}
+	
+	public int login(String i, String p) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String sql = "select user_pw from members where user_id = '" + i + "';";
+		try {
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			if(rs.next()) {
+				System.out.println(rs.getString("user_pw").toString() + " :: " + p.trim());
+				
+				if(Objects.equals(rs.getString("user_pw"), p)) {
+					System.out.println("로그인 성공");
+					return 1;
+				}
+				else {
+					Alert tmp = new Alert(AlertType.CONFIRMATION);
+					tmp.setContentText("비밀번호가 일치하지 않습니다.");
+					tmp.setHeaderText("비밀번호 오류");
+					tmp.setTitle("로그인 실패");
+					tmp.show();
+					return 0;
+				}
+			} else {
+				Alert tmp = new Alert(AlertType.CONFIRMATION);
+				tmp.setContentText("아이디가 존재하지 않습니다.");
+				tmp.setHeaderText("로그인 실패");
+				tmp.setTitle("로그인 실패");
+				tmp.show();
+				return 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null) ps.close();
+				if (rs != null) rs.close();
+			} catch (SQLException se2) {
+				se2.printStackTrace();
+			}
+		}
+		return 0;
 	}
 	
 	public void close() {
