@@ -96,7 +96,7 @@ public class Controller3 implements Initializable{
 			public void run() {
 				try {
 //					socket = new Socket("211.202.61.16", 9999);
-					socket = new Socket("127.0.0.1", 9999);
+					socket = new Socket("192.168.35.213", 9999);
 					dc.connect();
 					
 					
