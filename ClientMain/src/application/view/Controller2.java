@@ -164,7 +164,7 @@ public class Controller2 implements Initializable {
 
 	public void openWaitingRoom() {
 		try {
-			socketRoominfo = new Socket("127.0.0.1", 8888);
+			socketRoominfo = new Socket("192.168.35.213", 8888);
 			System.out.println("[ 대기실 socket 연결 성공 ]");
 		} catch (Exception e) {
 			System.out.println("[ 대기실 socket 연결 실패 ]");
