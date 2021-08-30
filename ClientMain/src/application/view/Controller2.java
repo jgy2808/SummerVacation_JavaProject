@@ -135,8 +135,8 @@ public class Controller2 implements Initializable {
 				Integer.parseInt(members_text.getText()));
 		dc.close();
 
-		chattingScene(Integer.toString(roomCode), title_text.getText(), nick_text.getText(), members_text.getText());
 		SendRoominfo(members_text.getText() + "#" + roomCode + "#" + nick_text.getText());
+		chattingScene(Integer.toString(roomCode), title_text.getText(), nick_text.getText(), members_text.getText());
 		RefreshRoomList();
 
 		title_text.setText("");
@@ -147,11 +147,7 @@ public class Controller2 implements Initializable {
 	// 닉네임 교체 버튼
 	@FXML
 	private void changebtnOnAction(ActionEvent event) {
-		dc.connect();
-		dc.testDelete();
-		System.out.println("Delete success");
-		dc.close();
-		RefreshRoomList();
+		
 	}
 	
 	// 새로고침 버튼
@@ -164,7 +160,7 @@ public class Controller2 implements Initializable {
 
 	public void openWaitingRoom() {
 		try {
-			socketRoominfo = new Socket("192.168.35.213", 8888);
+			socketRoominfo = new Socket("", 8888);
 			System.out.println("[ 대기실 socket 연결 성공 ]");
 		} catch (Exception e) {
 			System.out.println("[ 대기실 socket 연결 실패 ]");
@@ -219,8 +215,8 @@ public class Controller2 implements Initializable {
 					dc.connect();
 					int enterReturnVal = dc.EnterRoom(Integer.parseInt(btn.getId()));
 					if ( enterReturnVal == 1 ){
-						chattingScene(btn.getId(), roomArrayinfo[1], nick_text.getText(), roomArrayinfo[4]);
 						SendRoominfo("entry#" + btn.getId() + "#" + nick_text.getText());
+						chattingScene(btn.getId(), roomArrayinfo[1], nick_text.getText(), roomArrayinfo[4]);
 						RefreshRoomList();
 					} else if (enterReturnVal == 2){
 						Alert alert = new Alert(AlertType.WARNING);
@@ -291,6 +287,7 @@ public class Controller2 implements Initializable {
 //			tmp.close();		// 해당 두줄은 방입장이 기존 대기실방 닫는 코드
 		}
 		catch(IOException ex) {
+			
 			System.out.println(ex);
 			ex.printStackTrace();
 		}
