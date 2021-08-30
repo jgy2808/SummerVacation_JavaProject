@@ -215,7 +215,7 @@ public class Controller3 implements Initializable{
 	public void closeChattingRoom() {
 		try {
 			os = socket.getOutputStream();
-			String outMessage = "closeChattingSocket";
+			String outMessage = "closeChattingSocket#" + nick;
 			byte[] buffer = outMessage.getBytes("UTF-8");
 			int length = buffer.length;
 			os.write(buffer, 0, length);
