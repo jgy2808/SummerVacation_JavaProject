@@ -54,15 +54,17 @@ public class ConsoleChatServer extends Thread{
 			while((count = fromClient.read(buf))!= -1) { //중단 ctrl c같은거 누르면 -1을 보내기떄문에
 				String message = new String(buf, 0, count, "UTF-8");
 				System.out.println("server message : " + sock.getPort() + " : " + message);
-				if (message.equals("closeChattingSocket")) {
+				if (message.subSequence(0, 19).equals("closeChattingSocket")) {
+					System.out.println("closeChattingSocket(0~18) : " + message.subSequence(0, 19));
 					for(Socket s : room.get(rNum).keySet()) {
-						toClient = s.getOutputStream();
 						if(sock!=s) {
-							buf = ("out#" + Integer.toString(room.get(rNum).size() - 1) + "#" + myNick + "님이 퇴장하셨습니다.").getBytes("UTF-8");
+							toClient = s.getOutputStream();
+							buf = ("out#" + Integer.toString(room.get(rNum).size() - 1) + "#" + message.split("#")[1] + "님이 퇴장하셨습니다.").getBytes("UTF-8");
 							count = buf.length;
 							toClient.write(buf, 0, count);
 							toClient.flush();
 						} else {
+							toClient = sock.getOutputStream();
 							buf = ("closeChattingSocket").getBytes("UTF-8");
 							count = buf.length;
 							toClient.write(buf, 0, count);
@@ -75,6 +77,7 @@ public class ConsoleChatServer extends Thread{
 
 					fromClient.close();
 					toClient.close();
+					return ;
 				} else {
 					for (Socket s : room.get(rNum).keySet()) {
 						if (sock != s) { // 자기자신 sock에는 글을 보낼 필요가 없으니까 a가 아닌 b,c사용자에게 보내는용도
