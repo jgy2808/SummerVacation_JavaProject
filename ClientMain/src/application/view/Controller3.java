@@ -91,14 +91,12 @@ public class Controller3 implements Initializable{
 	// 실사용 하지 않는 컨트롤러
 	Thread thread;
 	public void openChattingRoom() {
-		
+		System.out.println("openchattingroom start");
 		thread = new Thread() {
 			public void run() {
 				try {
 //					socket = new Socket("211.202.61.16", 9999);
-					socket = new Socket("192.168.35.213", 9999);
-					dc.connect();
-					
+					socket = new Socket("127.0.0.1", 9999);
 					
 					ReceiveMessage();
 				} catch (Exception e) {
@@ -150,6 +148,7 @@ public class Controller3 implements Initializable{
 				} else if (m[0].equals("out")) {
 					Platform.runLater(() -> {
 						currentNum_Label.setText(m[1]);
+						printMessage(m[2] + m[3], "");
 						for (int i = 0; i < member_list.getItems().size(); i++ ) {
 							if ( m[2].equals(member_list.getItems().get(i).getLeft().getUserData()) ){
 								System.out.println("remove : " + m[2]);
@@ -159,6 +158,27 @@ public class Controller3 implements Initializable{
 						}
 //						member_list.getItems().
 					});
+				} else if (m[0].equals("closeChattingSocket")) { 
+					Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
+					dc.connect();
+					if (Integer.parseInt(currentNum_Label.getText()) > 1) {
+						dc.ExitRoom(roomCode);
+					} else {
+						dc.DeleteRoom(roomCode);
+					}
+					dc.close();
+					try {
+						if (socket != null && !socket.isClosed()) {
+							System.out.println(socket.getPort() + " socket is closed.");
+							socket.close();
+						}
+					} catch (Exception e) {
+						System.out.println("closeChattingRoom exception");
+						e.printStackTrace();
+					}
+					tmp.close();
+					is.close();
+					return ;
 				} else {
 					Platform.runLater(() -> {
 						printMessage(m[0], m[1]);
@@ -193,27 +213,19 @@ public class Controller3 implements Initializable{
 
 	// 채팅방에서 나올 때
 	public void closeChattingRoom() {
-		Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
-		dc.connect();
-		if (Integer.parseInt(currentNum_Label.getText()) > 1) {
-			dc.ExitRoom(roomCode);
-		} else {
-			dc.DeleteRoom(roomCode);
-		}
-		dc.close();
 		try {
-			if (socket != null && !socket.isClosed()) {
-				socket.close();
-				System.out.println("socket is closed.");
-			}
-		} catch (Exception e) {
-			System.out.println("closeChattingRoom exception");
+			os = socket.getOutputStream();
+			String outMessage = "closeChattingSocket";
+			byte[] buffer = outMessage.getBytes("UTF-8");
+			int length = buffer.length;
+			os.write(buffer, 0, length);
+			os.flush();
+			os.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		tmp.close();
 	}
 
-	
 	public void printMessage(String name, String text) {
 		p = new BorderPane();
     	u = new BorderPane();
@@ -226,6 +238,7 @@ public class Controller3 implements Initializable{
 		p.setBottom(d);
 		chat_list.getItems().add(p);
 	}
+	
 	@FXML
 	public void exit_btn() throws IOException {
 		closeChattingRoom();
