@@ -153,7 +153,12 @@ public class ChatController implements Initializable{
 							}
 						}
 					});
-				} else if (m[0].equals("closeChattingSocket")) { 
+				} else if (m[0].equals("closeChattingSocket")) {
+					Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
+					Platform.runLater(() -> {
+						tmp.close();
+					});
+					
 					dc.connect();
 					if (Integer.parseInt(currentNum_Label.getText()) > 1) {
 						dc.ExitRoom(roomCode);
@@ -161,10 +166,7 @@ public class ChatController implements Initializable{
 						dc.DeleteRoom(roomCode);
 					}
 					dc.close();
-					Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
-					Platform.runLater(() -> {
-						tmp.close();
-					});
+
 					try {
 						if (socket != null && !socket.isClosed()) {
 							System.out.println(nick + " socket is closed.");
