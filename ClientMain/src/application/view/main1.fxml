@@ -50,7 +50,7 @@
                      <children>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#search_cancel" prefHeight="35.0" prefWidth="78.0" text="검색취소" textFill="#2b2b2b">
+                              <Button fx:id="searchcancelbtn" mnemonicParsing="false" onAction="#search_cancel" prefHeight="35.0" prefWidth="78.0" text="검색취소" textFill="#2b2b2b">
                                  <effect>
                                     <SepiaTone level="0.42" />
                                  </effect>
