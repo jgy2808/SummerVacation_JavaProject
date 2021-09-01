@@ -96,8 +96,6 @@ public class WaitController implements Initializable {
 			        	search_text.setText("");
 			        	for(BorderPane p : savedList) {
 			        		int start = p.getChildren().get(0).toString().indexOf("'");
-//			        		int end = p.getChildren().get(0).toString().indexOf("'",start+1);
-//			        		System.out.println(findText + " :: " + p.getChildren().get(0).toString().indexOf(findText,start));
 			        		if(p.getChildren().get(0).toString().indexOf(findText,start) != -1) {
 			        			entries.add(p);
 			        			System.out.println("success!");
