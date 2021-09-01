@@ -21,7 +21,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class Controller3 implements Initializable{
+public class ChatController implements Initializable{
 	@FXML
 	private Button exitBtnComponent;
 	@FXML
@@ -94,10 +94,10 @@ public class Controller3 implements Initializable{
 			public void run() {
 				try {
 //					socket = new Socket("211.202.61.16", 9999);
-					socket = new Socket("127.0.0.1", 9999);
+					socket = new Socket("211.207.42.58", 9999);
 					os = socket.getOutputStream();
 					is = socket.getInputStream();
-					
+					System.out.println("[ 채팅방 socket 연결 성공 ] : " + socket.getPort());
 					ReceiveMessage(socket);
 				} catch (Exception e) {
 					System.out.println("openChattingRoom exception");
@@ -153,7 +153,12 @@ public class Controller3 implements Initializable{
 							}
 						}
 					});
-				} else if (m[0].equals("closeChattingSocket")) { 
+				} else if (m[0].equals("closeChattingSocket")) {
+					Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
+					Platform.runLater(() -> {
+						tmp.close();
+					});
+					
 					dc.connect();
 					if (Integer.parseInt(currentNum_Label.getText()) > 1) {
 						dc.ExitRoom(roomCode);
@@ -161,10 +166,7 @@ public class Controller3 implements Initializable{
 						dc.DeleteRoom(roomCode);
 					}
 					dc.close();
-					Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
-					Platform.runLater(() -> {
-						tmp.close();
-					});
+
 					try {
 						if (socket != null && !socket.isClosed()) {
 							System.out.println(nick + " socket is closed.");

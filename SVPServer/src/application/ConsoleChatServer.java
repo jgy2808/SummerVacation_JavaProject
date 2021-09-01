@@ -117,15 +117,23 @@ public class ConsoleChatServer extends Thread{
 				// [0] : 방 종류(entry: 입장, int: 방 크기(new))
 				// [1] : 방 코드(hashmap에 들어갈것)
 				// [2] : 입장하는 사람의 닉네임
-				
+				System.out.println("openWaitServer message : " + client_info);
 				// ---------------입장 버튼-----------------
-				if (ciArray[0].equals("entry")) { 
+				if (ciArray[0].equals("closeWaitingSocket")) {
+					for (Socket s : rclients) {
+						if (s.getPort() == Integer.parseInt(ciArray[1])) {
+							rclients.remove(s);
+							break;
+						}
+					}
+					break;
+				} else if (ciArray[0].equals("entry")) {
 					System.out.println(client_info + ": 입장");
 					Thread thread = new Thread() {
 						public void run() {
 							try {
 								System.out.println("entry 방 입장 thread in");
-								
+
 								Socket socket = serverSock.accept();
 								clients = room.remove(ciArray[1]);
 								clients.put(socket, ciArray[2]);
@@ -160,6 +168,8 @@ public class ConsoleChatServer extends Thread{
 				}
 				buffer = new byte[512];
 			}
+			is.close();
+			sock.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
@@ -169,8 +179,6 @@ public class ConsoleChatServer extends Thread{
 			} catch (IOException e2) { 
 				e2.printStackTrace(); 
 			}
-		} finally {
-			System.out.println("openWaitServer finally");
 		}
 	}
 	
@@ -195,6 +203,7 @@ public class ConsoleChatServer extends Thread{
 					System.out.println(roomserverSock + " : 방 코드 전용 소켓 생성 완료");
 					while (true) {
 						Socket rclient = roomserverSock.accept();
+						System.out.println(rclient);
 						rclients.add(rclient);
 						Thread thread = new Thread() {
 							public void run() {
@@ -220,6 +229,7 @@ public class ConsoleChatServer extends Thread{
 		
 	}
 	public static void main(String[] args) throws IOException{
+		System.out.println(" [ Server Open ] ");
 		ConsoleChatServer myServer=new ConsoleChatServer();
 		myServer.start();
 	}
