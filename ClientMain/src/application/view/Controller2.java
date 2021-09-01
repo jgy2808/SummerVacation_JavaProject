@@ -31,7 +31,7 @@ import javafx.stage.Stage;
 
 
 public class Controller2 implements Initializable {
-	Controller3 c3 = new Controller3();
+	Controller3 c3;
 	private DBConnect dc = new DBConnect();
 	
 	Label titleLabel;
@@ -238,7 +238,6 @@ public class Controller2 implements Initializable {
 			});
 		}
 	}
-
 	
 	public void SendRoominfo(String roominfo) {
 		try {
@@ -273,7 +272,8 @@ public class Controller2 implements Initializable {
 		try {
 			f = new FXMLLoader(getClass().getResource("main2.fxml"));
 			r = (Parent) f.load();
-			
+
+			c3 = new Controller3();
 			c3 = f.getController();
 			c3.DataInit(code, title, nick, maxNum);
 
