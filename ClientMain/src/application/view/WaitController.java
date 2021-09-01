@@ -30,15 +30,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 
-public class Controller2 implements Initializable {
-	Controller3 c3;
+public class WaitController implements Initializable {
+	ChatController c3;
 	private DBConnect dc = new DBConnect();
 	
 	Label titleLabel;
 	Label roomMasterLabel;
 	Label memberCountLabel;
 	OutputStream os;
-	InputStream is;
 	Socket socketRoominfo;
 	
 	BorderPane pane;
@@ -62,6 +61,8 @@ public class Controller2 implements Initializable {
 	private Button changebtn;
 	@FXML
 	private Button refreshbtn;
+	@FXML
+	private Button searchcancelbtn;
 
 	ObservableList<BorderPane> savedList = FXCollections.observableArrayList();
 	int checkSearch = 0;
@@ -72,6 +73,7 @@ public class Controller2 implements Initializable {
 	FXMLLoader f;
 	Parent r;
 	Stage stage2;
+	
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -141,7 +143,6 @@ public class Controller2 implements Initializable {
 
 		title_text.setText("");
 		members_text.setText("");
-		nick_text.setText("");
 	}
 	
 	// 닉네임 교체 버튼
@@ -159,16 +160,52 @@ public class Controller2 implements Initializable {
 	// ----------------- 대기실 관련 메소드 --------------------------
 
 	public void openWaitingRoom() {
+		Thread thread = new Thread() {
+			public void run() {
+				try {
+					socketRoominfo = new Socket("127.0.0.1", 8888);
+					os = socketRoominfo.getOutputStream();
+					System.out.println(socketRoominfo + " : [ 대기실 socket 연결 성공 ]");
+					ReceiveMessage();
+				} catch (Exception e) {
+					System.out.println("[ 대기실 socket 연결 실패 ]");
+					e.printStackTrace();
+					closeWaitingRoom();
+				}
+			}
+		};
+		thread.start();
+	}
+	
+	public void ReceiveMessage() {
 		try {
-			socketRoominfo = new Socket("", 8888);
-			System.out.println("[ 대기실 socket 연결 성공 ]");
-		} catch (Exception e) {
-			System.out.println("[ 대기실 socket 연결 실패 ]");
+			System.out.println(socketRoominfo);
+			InputStream is = socketRoominfo.getInputStream();
+			byte[] buffer = new byte[124];
+			int length;
+			while ((length = is.read(buffer)) != -1) {
+				String mes = new String(buffer, 0, length, "UTF-8");
+				if (mes.equals("closeWaitingSocket")) {
+					Stage stage = (Stage) searchcancelbtn.getScene().getWindow();
+					Platform.runLater(() -> {
+						stage.close();
+					});
+					try {
+						if (socketRoominfo != null && !socketRoominfo.isClosed()) {
+							socketRoominfo.close();
+							System.out.println("socketRoominfo end");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					break;
+				}
+			}
+			is.close();
+		} catch (IOException e) {
+			System.out.println(socketRoominfo + " << 에러 >>");
 			e.printStackTrace();
-			closeWaitingRoom();
 		}
-//		String s = (String)(roomList.getScene().getWindow()).getUserData();
-//		nick_text.setText(s);
 	}
 	
 	public void RefreshRoomList() {
@@ -250,18 +287,13 @@ public class Controller2 implements Initializable {
 			closeWaitingRoom();
 		}
 	}
-	
+
 	public void closeWaitingRoom() {
-		try {
-			if (socketRoominfo != null && !socketRoominfo.isClosed()) {
-				socketRoominfo.close();
-				System.out.println("socketRoominfo end");
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		System.out.println(socketRoominfo);
+		SendRoominfo("closeWaitingSocket#" + socketRoominfo.getLocalPort());
 	}
 
+	// 검색취소 버튼
 	@FXML
 	public void search_cancel() {
 		roomList.setItems(savedList);
@@ -273,7 +305,7 @@ public class Controller2 implements Initializable {
 			f = new FXMLLoader(getClass().getResource("main2.fxml"));
 			r = (Parent) f.load();
 
-			c3 = new Controller3();
+			c3 = new ChatController();
 			c3 = f.getController();
 			c3.DataInit(code, title, nick, maxNum);
 
@@ -281,13 +313,9 @@ public class Controller2 implements Initializable {
 			stage2.setScene(new Scene(r));
 			stage2.setTitle(title);
 			stage2.setOnCloseRequest(event -> c3.closeChattingRoom());
-			stage2.show();				// 새로운 창을 여는 코드	
-			
-//			Stage tmp = (Stage) btn.getScene().getWindow();
-//			tmp.close();		// 해당 두줄은 방입장이 기존 대기실방 닫는 코드
+			stage2.show();
 		}
 		catch(IOException ex) {
-			
 			System.out.println(ex);
 			ex.printStackTrace();
 		}
