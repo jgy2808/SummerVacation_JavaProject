@@ -31,6 +31,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 public class LogController{
+	WaitController c2;
 
 	@FXML
 	TextArea user_email;
@@ -77,7 +78,7 @@ public class LogController{
 			FXMLLoader f = new FXMLLoader(getClass().getResource("main1.fxml"));
 			Parent parent = (Parent) f.load();
 			
-			Controller2 c2 = new Controller2();
+			c2 = new WaitController();
 			c2 = f.getController();
 			c2.DataInit(i);
 			
@@ -85,6 +86,7 @@ public class LogController{
 			backStage.setScene(new Scene(parent));
 			backStage.setTitle("YSB");
 			backStage.setUserData(i); // i = À¯ÀúÀÇ id
+			backStage.setOnCloseRequest(event -> c2.closeWaitingRoom());
 			backStage.show();
 			
 			Stage tmp = (Stage) login_id.getScene().getWindow();
