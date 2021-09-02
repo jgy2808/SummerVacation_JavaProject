@@ -16,12 +16,16 @@ public class DBConnect {
 	String USER = "bfb03fb3f4f761";
 	String PASSWORD = "48d5c287";
 	String DRIVER = "com.mysql.cj.jdbc.Driver";
+	String URL2 = "jdbc:mysql://localhost:3306/chatdb";
+	String USER2 = "root";
+	String PASSWORD2 = "root";
+	String DRIVER2 = "com.mysql.cj.jdbc.Driver";
 	
 	public void connect() {
-		String url = URL;
-		String user = USER;
-		String password = PASSWORD;
-		String driver = DRIVER;
+		String url = URL2;
+		String user = USER2;
+		String password = PASSWORD2;
+		String driver = DRIVER2;
 		try {
 			Class.forName(driver);
 			conn = DriverManager.getConnection(url, user, password);

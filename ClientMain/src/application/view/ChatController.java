@@ -94,7 +94,8 @@ public class ChatController implements Initializable{
 			public void run() {
 				try {
 //					socket = new Socket("211.202.61.16", 9999);
-					socket = new Socket("211.207.42.58", 9999);
+//					socket = new Socket("211.207.42.58", 9999);
+					socket = new Socket("127.0.0.1", 9999);
 					os = socket.getOutputStream();
 					is = socket.getInputStream();
 					System.out.println("[ 채팅방 socket 연결 성공 ] : " + socket.getPort());

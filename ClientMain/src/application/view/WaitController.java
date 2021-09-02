@@ -300,7 +300,7 @@ public class WaitController implements Initializable {
 	
 	public void chattingScene(String code, String title, String nick, String maxNum) {
 		try {
-			f = new FXMLLoader(getClass().getResource("main2.fxml"));
+			f = new FXMLLoader(getClass().getResource("chat.fxml"));
 			r = (Parent) f.load();
 
 			c3 = new ChatController();
