@@ -75,7 +75,7 @@ public class LogController{
 		d2.close();
 		
 		if(r == 1) {
-			FXMLLoader f = new FXMLLoader(getClass().getResource("main1.fxml"));
+			FXMLLoader f = new FXMLLoader(getClass().getResource("wait.fxml"));
 			Parent parent = (Parent) f.load();
 			
 			c2 = new WaitController();
