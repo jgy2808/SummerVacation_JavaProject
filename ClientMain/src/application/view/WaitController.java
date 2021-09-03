@@ -214,7 +214,7 @@ public class WaitController implements Initializable {
 		if (roominfo.equals("")) return;
 		dc.close();
 		
-		String[] roomArray = roominfo.split("\n"); // 방 제목, 인원수, 비번, 코드
+		String[] roomArray = roominfo.split("\n"); // 0 : 코드 | 1 : 제목 | 2 : 방장 | 3 : 현재 인원 | 4 : 최대 인원
 		
 		for (int i = 0; i < roomArray.length; i++) {
 			String[] roomArrayinfo = roomArray[i].split(", ");
