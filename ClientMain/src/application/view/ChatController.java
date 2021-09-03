@@ -124,6 +124,8 @@ public class ChatController implements Initializable{
 					Platform.runLater(() -> {
 						currentNum_Label.setText(m[1]);
 						printMessage(m[2] + m[3], "");
+						
+						//member_list Ãß°¡
 						if ( m[4].charAt(0) == '[' ) {
 							m[4] = m[4].substring(1, m[4].length() - 1);
 							String[] memArray = m[4].split(", ");
