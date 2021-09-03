@@ -12,20 +12,27 @@ import javafx.scene.control.Alert.AlertType;
 
 public class DBConnect {
 	Connection conn;
+	// heroku ClearDB
 	String URL = "jdbc:mysql://bfb03fb3f4f761:48d5c287@us-cdbr-east-04.cleardb.com/heroku_c7666ab0a7cf8a4?reconnect=true";
 	String USER = "bfb03fb3f4f761";
 	String PASSWORD = "48d5c287";
 	String DRIVER = "com.mysql.cj.jdbc.Driver";
+	// NoteBook Local DB
 	String URL2 = "jdbc:mysql://localhost:3306/chatdb";
 	String USER2 = "root";
 	String PASSWORD2 = "root";
 	String DRIVER2 = "com.mysql.cj.jdbc.Driver";
+	// ServerPC Local DB
+	String URL3 = "jdbc:mysql://192.168.35.133:3306/chatdb";
+	String USER3 = "chatuser";
+	String PASSWORD3 = "chatuser";
+	String DRIVER3 = "com.mysql.cj.jdbc.Driver";
 	
 	public void connect() {
-		String url = URL2;
-		String user = USER2;
-		String password = PASSWORD2;
-		String driver = DRIVER2;
+		String url = URL3;
+		String user = USER3;
+		String password = PASSWORD3;
+		String driver = DRIVER3;
 		try {
 			Class.forName(driver);
 			conn = DriverManager.getConnection(url, user, password);
