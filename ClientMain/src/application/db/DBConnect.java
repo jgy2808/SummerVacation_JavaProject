@@ -29,10 +29,10 @@ public class DBConnect {
 	String DRIVER3 = "com.mysql.cj.jdbc.Driver";
 	
 	public void connect() {
-		String url = URL3;
-		String user = USER3;
-		String password = PASSWORD3;
-		String driver = DRIVER3;
+		String url = URL2;
+		String user = USER2;
+		String password = PASSWORD2;
+		String driver = DRIVER2;
 		try {
 			Class.forName(driver);
 			conn = DriverManager.getConnection(url, user, password);
