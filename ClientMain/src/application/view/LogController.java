@@ -1,27 +1,35 @@
 package application.view;
 
 import java.io.IOException;
+import java.net.URL;
 //import java.net.URISyntaxException;
 //import java.net.URL;
 import java.sql.SQLException;
 //import java.util.ResourceBundle;
+import java.util.ResourceBundle;
 
 import application.db.DBConnect;
+import javafx.event.EventHandler;
 //import javafx.collections.FXCollections;
 //import javafx.collections.ObservableList;
 //import javafx.event.ActionEvent;
 //import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 //import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 //import javafx.scene.control.Button;
 //import javafx.scene.control.Label;
 //import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 //import javafx.scene.input.KeyCode;
 //import javafx.scene.input.KeyEvent;
 //import javafx.scene.layout.BorderPane;
@@ -30,7 +38,7 @@ import javafx.scene.control.Alert.AlertType;
 //import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class LogController{
+public class LogController implements Initializable {
 	WaitController c2;
 
 	@FXML
@@ -43,7 +51,37 @@ public class LogController{
 	TextArea login_id;
 	@FXML
 	TextArea login_pw;
-	
+
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		try {
+			login_id.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
+				@Override
+				public void handle(KeyEvent t) {
+					if (t.getCode() == KeyCode.TAB) {
+						login_pw.requestFocus();
+					}
+				}
+			});
+			
+			login_pw.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
+				@Override
+				public void handle(KeyEvent t) {
+					if (t.getCode() == KeyCode.ENTER) {
+						try {
+							login();
+						} catch (ClassNotFoundException | SQLException | IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
+		} catch (Exception e) {
+			System.out.println("initialize Exception");
+			e.printStackTrace();
+		}
+	}
+
 	@FXML
 	public void signup() throws ClassNotFoundException, SQLException, IOException {
 		String e = user_email.getText();
@@ -122,7 +160,5 @@ public class LogController{
 		Stage tmp = (Stage) user_id.getScene().getWindow();
 		tmp.close();
 	}
-	
-	
-	
+
 }
