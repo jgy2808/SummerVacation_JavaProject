@@ -59,17 +59,49 @@ public class LogController implements Initializable {
 				@Override
 				public void handle(KeyEvent t) {
 					if (t.getCode() == KeyCode.TAB) {
+						login_id.setText(login_id.getText().trim());
 						login_pw.requestFocus();
 					}
 				}
 			});
-			
 			login_pw.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
 				@Override
 				public void handle(KeyEvent t) {
 					if (t.getCode() == KeyCode.ENTER) {
+						login_pw.setText(login_pw.getText().trim());
 						try {
 							login();
+						} catch (ClassNotFoundException | SQLException | IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
+			user_email.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
+				@Override
+				public void handle(KeyEvent event) {
+					if (event.getCode() == KeyCode.TAB) {
+						user_email.setText(user_email.getText().trim());
+						user_id.requestFocus();
+					}
+				}
+			});
+			user_id.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
+				@Override
+				public void handle(KeyEvent event) {
+					if (event.getCode() == KeyCode.TAB) {
+						user_id.setText(user_id.getText().trim());
+						user_pw.requestFocus();
+					}
+				}
+			});
+			user_pw.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
+				@Override
+				public void handle(KeyEvent event) {
+					if (event.getCode() == KeyCode.ENTER) {
+						user_pw.setText(user_pw.getText().trim());
+						try {
+							signup();
 						} catch (ClassNotFoundException | SQLException | IOException e) {
 							e.printStackTrace();
 						}
@@ -122,7 +154,7 @@ public class LogController implements Initializable {
 			
 			Stage backStage = new Stage();
 			backStage.setScene(new Scene(parent));
-			backStage.setTitle("YSB");
+			backStage.setTitle("Summer Vacation Project");
 			backStage.setUserData(i); // i = À¯ÀúÀÇ id
 			backStage.setOnCloseRequest(event -> c2.closeWaitingRoom());
 			backStage.show();
@@ -141,8 +173,9 @@ public class LogController implements Initializable {
 		Parent p = (Parent) f.load();
 		Stage backStage = new Stage();
 		backStage.setScene(new Scene(p));
-		backStage.setTitle("YSB");
+		backStage.setTitle("Summer Vacation Project");
 		backStage.show();
+		
 		
 		Stage tmp = (Stage) login_id.getScene().getWindow();
 		tmp.close();
@@ -154,7 +187,7 @@ public class LogController implements Initializable {
 		Parent p = (Parent) f.load();
 		Stage backStage = new Stage();
 		backStage.setScene(new Scene(p));
-		backStage.setTitle("YSB");
+		backStage.setTitle("Summer Vacation Project");
 		backStage.show();
 		
 		Stage tmp = (Stage) user_id.getScene().getWindow();
