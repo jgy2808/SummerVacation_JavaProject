@@ -6,54 +6,73 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
 <?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox fx:controller="application.view.LogController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #5A97A6;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <MenuBar>
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
-        </menus>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="570.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.view.LogController">
+   <top>
+      <MenuBar style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+         <menus>
+            <Menu mnemonicParsing="false" text="File">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Close" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Delete" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="About" />
+               </items>
+            </Menu>
+         </menus>
       </MenuBar>
-      <VBox prefHeight="200.0" prefWidth="100.0">
-         <VBox.margin>
-            <Insets left="300.0" right="300.0" top="200.0" />
-         </VBox.margin>
+   </top>
+   <bottom>
+      <HBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Login">
+            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#login" prefHeight="45.0" prefWidth="70.0" style="-fx-background-color: white; -fx-border-color: grey;" text="login">
+               <padding>
+                  <Insets bottom="15.0" top="15.0" />
+               </padding>
+               <HBox.margin>
+                  <Insets right="25.0" />
+               </HBox.margin>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <font>
+                  <Font name="Serif Regular" size="12.0" />
+               </font>
+            </Button>
+            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#goSignup" prefHeight="45.0" prefWidth="70.0" style="-fx-background-color: white; -fx-border-color: grey;" text="sign up">
+               <padding>
+                  <Insets bottom="15.0" top="15.0" />
+               </padding>
+               <font>
+                  <Font name="Serif Regular" size="12.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+   </bottom>
+   <center>
+      <VBox alignment="CENTER" prefHeight="379.0" prefWidth="570.0" BorderPane.alignment="CENTER">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Login" textAlignment="CENTER">
                <fill>
-                  <LinearGradient endX="1.0" endY="1.0">
+                  <LinearGradient endX="1.0" endY="1.0" proportional="false">
                      <stops>
-                        <Stop>
-                           <color>
-                              <Color />
-                           </color>
-                        </Stop>
-                        <Stop offset="1.0">
-                           <color>
-                              <Color red="1.0" green="1.0" blue="1.0" />
-                           </color>
-                        </Stop>
+                        <Stop color="BLACK" />
+                        <Stop color="BLACK" offset="1.0" />
                      </stops>
                   </LinearGradient>
                </fill>
@@ -61,37 +80,20 @@
                   <Font size="73.0" />
                </font>
                <VBox.margin>
-                  <Insets left="235.0" />
+                  <Insets />
                </VBox.margin>
             </Text>
-            <TextArea prefHeight="200.0" prefWidth="200.0" promptText="ID" fx:id="login_id">
+            <TextArea fx:id="login_id" cache="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="300.0" promptText="ID" style="-fx-background-color: white;">
                <VBox.margin>
-                  <Insets bottom="20.0" left="100.0" right="100.0" top="20.0" />
+                  <Insets bottom="20.0" left="100.0" right="100.0" top="50.0" />
                </VBox.margin>
             </TextArea>
-            <TextArea prefHeight="200.0" prefWidth="200.0" promptText="PW" fx:id="login_pw">
+            <TextArea fx:id="login_pw" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="300.0" promptText="PW" style="-fx-background-color: white;">
                <VBox.margin>
                   <Insets bottom="50.0" left="100.0" right="100.0" />
                </VBox.margin>
             </TextArea>
-            <HBox prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Button mnemonicParsing="false" prefHeight="53.0" prefWidth="74.0" text="로그인" onAction="#login">
-                     <padding>
-                        <Insets bottom="15.0" top="15.0" />
-                     </padding>
-                     <HBox.margin>
-                        <Insets left="250.0" right="25.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button mnemonicParsing="false" prefHeight="53.0" prefWidth="74.0" text="회원가입" onAction="#goSignup">
-                     <padding>
-                        <Insets bottom="15.0" top="15.0" />
-                     </padding>
-                  </Button>
-               </children>
-            </HBox>
          </children>
       </VBox>
-   </children>
-</VBox>
+   </center>
+</BorderPane>

@@ -50,8 +50,6 @@ public class WaitController implements Initializable {
 	@FXML
 	private TextArea members_text;
 	@FXML
-	private TextArea passwd_text;
-	@FXML
 	private TextArea search_text;
 	@FXML
 	public TextArea nick_text;
@@ -309,7 +307,7 @@ public class WaitController implements Initializable {
 
 			stage2 = new Stage();
 			stage2.setScene(new Scene(r));
-			stage2.setTitle(title);
+			stage2.setTitle("Summer Vacation Project : " + title);
 			stage2.setOnCloseRequest(event -> c3.closeChattingRoom());
 			stage2.show();
 		}
