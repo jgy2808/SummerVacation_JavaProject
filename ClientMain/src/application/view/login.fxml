@@ -9,13 +9,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
 <?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="700.0" prefWidth="700.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.view.LogController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="570.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.view.LogController">
    <top>
       <MenuBar style="-fx-background-color: white;" BorderPane.alignment="CENTER">
          <menus>
@@ -38,9 +37,9 @@
       </MenuBar>
    </top>
    <bottom>
-      <HBox alignment="TOP_CENTER" prefHeight="188.0" prefWidth="700.0" BorderPane.alignment="CENTER">
+      <HBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onAction="#login" prefHeight="53.0" prefWidth="74.0" text="로그인">
+            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#login" prefHeight="45.0" prefWidth="70.0" style="-fx-background-color: white; -fx-border-color: grey;" text="login">
                <padding>
                   <Insets bottom="15.0" top="15.0" />
                </padding>
@@ -50,32 +49,30 @@
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
+               <font>
+                  <Font name="Serif Regular" size="12.0" />
+               </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#goSignup" prefHeight="53.0" prefWidth="74.0" text="회원가입">
+            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#goSignup" prefHeight="45.0" prefWidth="70.0" style="-fx-background-color: white; -fx-border-color: grey;" text="sign up">
                <padding>
                   <Insets bottom="15.0" top="15.0" />
                </padding>
+               <font>
+                  <Font name="Serif Regular" size="12.0" />
+               </font>
             </Button>
          </children>
       </HBox>
    </bottom>
-   <left>
-      <VBox alignment="CENTER" prefHeight="656.0" prefWidth="700.0" BorderPane.alignment="CENTER">
+   <center>
+      <VBox alignment="CENTER" prefHeight="379.0" prefWidth="570.0" BorderPane.alignment="CENTER">
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Login" textAlignment="CENTER">
                <fill>
-                  <LinearGradient endX="1.0" endY="1.0">
+                  <LinearGradient endX="1.0" endY="1.0" proportional="false">
                      <stops>
-                        <Stop>
-                           <color>
-                              <Color />
-                           </color>
-                        </Stop>
-                        <Stop offset="1.0">
-                           <color>
-                              <Color blue="1.0" green="1.0" red="1.0" />
-                           </color>
-                        </Stop>
+                        <Stop color="BLACK" />
+                        <Stop color="BLACK" offset="1.0" />
                      </stops>
                   </LinearGradient>
                </fill>
@@ -86,17 +83,17 @@
                   <Insets />
                </VBox.margin>
             </Text>
-            <TextArea fx:id="login_id" cache="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="300.0" promptText="ID" style="-fx-border-style: none;">
+            <TextArea fx:id="login_id" cache="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="300.0" promptText="ID" style="-fx-background-color: white;">
                <VBox.margin>
-                  <Insets bottom="20.0" left="100.0" right="100.0" top="20.0" />
+                  <Insets bottom="20.0" left="100.0" right="100.0" top="50.0" />
                </VBox.margin>
             </TextArea>
-            <TextArea fx:id="login_pw" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="300.0" promptText="PW">
+            <TextArea fx:id="login_pw" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="300.0" promptText="PW" style="-fx-background-color: white;">
                <VBox.margin>
                   <Insets bottom="50.0" left="100.0" right="100.0" />
                </VBox.margin>
             </TextArea>
          </children>
       </VBox>
-   </left>
+   </center>
 </BorderPane>
