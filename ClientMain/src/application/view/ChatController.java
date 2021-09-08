@@ -13,14 +13,12 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -40,6 +38,7 @@ public class ChatController implements Initializable{
 	
 	private BorderPane p;
 	private BorderPane subp;
+	private BorderPane subp2;
 	private BorderPane u;
 	private BorderPane d;
 	private Label text;
@@ -65,7 +64,6 @@ public class ChatController implements Initializable{
 			        	String mestext = chat_text.getText().trim() + "      ";
 			        	SendMessage(nick + "#" + mestext);
 			        	printMessage("", mestext);
-			        	
 			        } else if (t.getCode() == KeyCode.ESCAPE) {
 			        	System.out.println("ESC");
 			        } else if (t.getCode() == KeyCode.F1) {
@@ -98,7 +96,7 @@ public class ChatController implements Initializable{
 					socket = new Socket("127.0.0.1", 9999);
 					os = socket.getOutputStream();
 					is = socket.getInputStream();
-					System.out.println("[ 채팅방 socket 연결 성공 ] : " + socket.getPort());
+					System.out.println("[ 채팅방 socket 연결 성공 ] : " + socket.getLocalPort());
 					ReceiveMessage(socket);
 				} catch (Exception e) {
 					System.out.println("openChattingRoom exception");
@@ -237,10 +235,8 @@ public class ChatController implements Initializable{
 		StringBuffer mes = new StringBuffer();
 		mes.append(text);
 		int maxwidthlen = 30;
-		System.out.println(" 0. " + mes.toString());
 		for (int i = 1; i <= text.length() / maxwidthlen; i++) {
 			mes.insert(i * maxwidthlen - 1, "\n");
-			System.out.println(" " + Integer.toString(i) + ". \n" + mes);
 		}
 		
 		// 시간 추가 코드
@@ -256,23 +252,24 @@ public class ChatController implements Initializable{
 			minute = "0" + minute;
 		}
 		String time = hour + " : " + minute;
-		System.out.println("hour : " + hour + " min : " + minute + " time : " + time);
 		Label currentTime = new Label(time);
 		currentTime.setFont(new Font("gulim", 10));
-		currentTime.setAlignment(Pos.CENTER);
-		currentTime.setStyle("-fx-background-color : red; -fx-text-fill : white; -fx-padding : 5px;");
+		
 		
 		// 채팅 리스트에 붙이기 코드
 		if (name.equals("")) {
 	    	p = new BorderPane();
 	    	subp = new BorderPane();
-	    	subp.setStyle("-fx-background-color : grey;");
-
-			Label findText = new Label(mes.toString());
-			findText.setFont(new Font("gulim", 20));
-			subp.setRight(findText);
+	    	subp2 = new BorderPane();
+			
+	    	this.text = new Label(mes.toString());
+	    	this.text.setFont(new Font("gulim", 15));
 			currentTime.setText(currentTime.getText() + "        ");
-			subp.setLeft(currentTime);
+
+			subp2.setBottom(currentTime);
+
+			subp.setLeft(subp2);
+			subp.setRight(this.text);
         	
         	p.setRight(subp);
         	chat_text.setText("");
@@ -280,16 +277,21 @@ public class ChatController implements Initializable{
 		} else {
 			p = new BorderPane();
 			subp = new BorderPane();
+	    	subp2 = new BorderPane();
 			u = new BorderPane();
 			d = new BorderPane();
 			this.name = new Label(name);
 			this.text = new Label(mes.toString());
+			this.text.setFont(new Font("gulim", 15));
+			currentTime.setText("        " + currentTime.getText());
 
+			subp2.setBottom(currentTime);
+			subp.setLeft(subp2);
+			
 			u.setLeft(this.name);
 			d.setLeft(this.text);
-			currentTime.setText("        " + currentTime.getText());
-			subp.setLeft(currentTime);
 			d.setCenter(subp);
+			
 			p.setTop(u);
 			p.setBottom(d);
 			chat_list.getItems().add(p);
