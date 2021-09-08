@@ -37,7 +37,7 @@ public class DBConnect {
 			Class.forName(driver);
 			conn = DriverManager.getConnection(url, user, password);
 			
-			System.out.println("database connection Success.!!");
+//			System.out.println("database connection Success.!!");
 		} catch (ClassNotFoundException e1) {
 			e1.printStackTrace(); // database driver class Not load
 			try { conn.close(); } 
