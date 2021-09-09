@@ -310,9 +310,5 @@ public class WaitController implements Initializable {
 			ex.printStackTrace();
 		}
 	}
-	
-	public void closeStage(Stage stage) {
-		
-	}
 }
 // main1 컨트롤러 달기, 리스트뷰 이름 정하기, 버튼에 함수 달기

@@ -125,6 +125,7 @@ public class ChatController implements Initializable{
 						p = new BorderPane();
 						Label entryMessage = new Label(m[2] + m[3]);
 						entryMessage.setFont(new Font("gulim", 15));
+						entryMessage.setStyle("-fx-background-radius : 20px; -fx-background-color : #E4D8DC; -fx-padding : 5px;");
 						p.setCenter(entryMessage);
 			        	chat_list.getItems().add(p);
 			        	
@@ -229,7 +230,11 @@ public class ChatController implements Initializable{
 		}
 	}
 
+	String time;
 	public void printMessage(String name, String text) {
+    	p = new BorderPane();
+    	subp = new BorderPane();
+		
 		// 줄바꿈 추가 코드
 		StringBuffer mes = new StringBuffer();
 		mes.append(text);
@@ -250,22 +255,19 @@ public class ChatController implements Initializable{
 		if ((minute = Integer.toString(ldt.getMinute())).length() == 1) {
 			minute = "0" + minute;
 		}
-		String time = hour + " : " + minute;
+		time = hour + " : " + minute;
 		Label currentTime = new Label(time);
 		currentTime.setFont(new Font("gulim", 10));
 		
-		
+    	subp2 = new BorderPane();
+		subp2.setBottom(currentTime);
 		// 채팅 리스트에 붙이기 코드
 		if (name.equals("")) {
-	    	p = new BorderPane();
-	    	subp = new BorderPane();
-	    	subp2 = new BorderPane();
 			
 	    	this.text = new Label(mes.toString());
 	    	this.text.setFont(new Font("gulim", 15));
 			currentTime.setText(currentTime.getText() + "        ");
 
-			subp2.setBottom(currentTime);
 
 			subp.setLeft(subp2);
 			subp.setRight(this.text);
@@ -274,9 +276,6 @@ public class ChatController implements Initializable{
         	chat_text.setText("");
         	chat_list.getItems().add(p);
 		} else {
-			p = new BorderPane();
-			subp = new BorderPane();
-	    	subp2 = new BorderPane();
 			u = new BorderPane();
 			d = new BorderPane();
 			this.name = new Label(name);
@@ -284,7 +283,6 @@ public class ChatController implements Initializable{
 			this.text.setFont(new Font("gulim", 15));
 			currentTime.setText("        " + currentTime.getText());
 
-			subp2.setBottom(currentTime);
 			subp.setLeft(subp2);
 			
 			u.setLeft(this.name);
