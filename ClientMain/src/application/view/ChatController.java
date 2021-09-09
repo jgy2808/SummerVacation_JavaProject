@@ -157,7 +157,6 @@ public class ChatController implements Initializable{
 						printMessage(m[2] + m[3], "");
 						for (int i = 0; i < member_list.getItems().size(); i++ ) {
 							if ( m[2].equals(member_list.getItems().get(i).getLeft().getUserData()) ){
-								System.out.println(nick + " : remove : " + m[2]);
 								member_list.getItems().remove(i);
 								break;
 							}
