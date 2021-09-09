@@ -66,13 +66,6 @@ public class WaitController implements Initializable {
 	int checkSearch = 0;
 	int roomCode = 0;
 	
-	
-	// chattingscene method variable
-	FXMLLoader f;
-	Parent r;
-	Stage stage2;
-	
-	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
@@ -147,6 +140,7 @@ public class WaitController implements Initializable {
 		dc.connect();
 		dc.testDelete();
 		dc.close();
+		RefreshRoomList();
 	}
 	
 	// 새로고침 버튼
@@ -297,47 +291,28 @@ public class WaitController implements Initializable {
 		roomList.setItems(savedList);
 		checkSearch = 0;
 	}
-
-	ChatController[] c3Array = new ChatController[5];
-	ChatController[] c33Array = new ChatController[5];
-	int c3arrayLength = 0;
-	int c33arrayLength = 0;
+	
 	public void chattingScene(String code, String title, String nick, String maxNum) {
 		try {
-			f = new FXMLLoader(getClass().getResource("chat.fxml"));
-			r = (Parent) f.load();
-//			c3 = new ChatController();
-			ChatController c33 = new ChatController();
-			c33Array[c33arrayLength] = c33;
-			System.out.println("새로 생성한 c3 : index = " + c33arrayLength + " , c33Array[" + c33arrayLength + "] : " + c33Array[c33arrayLength]);
-			c33arrayLength += 1;
-			System.out.println("arrayLength + 1 -> " + c33arrayLength);
-			for (int i = 0; i < c33arrayLength; i++) {
-				System.out.println("c33Array[" + i + "] : " + c33Array[i]);
-			}
-			c3 = f.getController();
+			FXMLLoader f = new FXMLLoader(getClass().getResource("chat.fxml"));
+			Parent r = (Parent) f.load();
+			ChatController c3 = f.getController();
 			c3.DataInit(code, title, nick, maxNum);
 			
-			System.out.println("before stage2 called");
-			stage2 = new Stage();
+			Stage stage2 = new Stage();
 			stage2.setScene(new Scene(r));
 			stage2.setTitle("Summer Vacation Project : " + title);
-			c3 = c33;
-			c3Array[c3arrayLength++] = c3;
-			System.out.println("<c3 = c33>");
-			for (int i = 0; i < c3arrayLength; i++) {
-				System.out.println("c3Array[" + i + "] : " + c3Array[i]);
-			}
 			stage2.setOnCloseRequest(event -> c3.closeChattingRoom());
-			
-			
 			stage2.show();
-			System.out.println("stage2 show end");
 		}
 		catch(IOException ex) {
 			System.out.println(ex);
 			ex.printStackTrace();
 		}
+	}
+	
+	public void closeStage(Stage stage) {
+		
 	}
 }
 // main1 컨트롤러 달기, 리스트뷰 이름 정하기, 버튼에 함수 달기
