@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 import application.db.DBConnect;
@@ -12,18 +13,16 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class ChatController implements Initializable{
-	@FXML
-	private Button exitBtnComponent;
 	@FXML
 	private TextArea chat_text;
 	@FXML
@@ -37,9 +36,11 @@ public class ChatController implements Initializable{
 	@FXML
 	private Label title_Label;
 	
-	private BorderPane p = new BorderPane();
-	private BorderPane u = new BorderPane();
-	private BorderPane d = new BorderPane();
+	private BorderPane p;
+	private BorderPane subp;
+	private BorderPane subp2;
+	private BorderPane u;
+	private BorderPane d;
 	private Label text;
 	private Label name;
 
@@ -59,13 +60,10 @@ public class ChatController implements Initializable{
 			chat_text.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
 			    @Override
 			    public void handle(KeyEvent t) {
-			    	p = new BorderPane();
 			        if (t.getCode() == KeyCode.ENTER) {
-			        	Label findText = new Label(chat_text.getText().trim() + "      ");
-			        	SendMessage(nick + "#" + findText.getText());
-			        	p.setRight(findText);
-			        	chat_text.setText("");
-			        	chat_list.getItems().add(p);
+			        	String mestext = chat_text.getText().trim() + "      ";
+			        	SendMessage(nick + "#" + mestext);
+			        	printMessage("", mestext);
 			        } else if (t.getCode() == KeyCode.ESCAPE) {
 			        	System.out.println("ESC");
 			        } else if (t.getCode() == KeyCode.F1) {
@@ -98,7 +96,7 @@ public class ChatController implements Initializable{
 					socket = new Socket("127.0.0.1", 9999);
 					os = socket.getOutputStream();
 					is = socket.getInputStream();
-					System.out.println("[ 채팅방 socket 연결 성공 ] : " + socket.getPort());
+					System.out.println("[ 채팅방 socket 연결 성공 ] : " + socket.getLocalPort());
 					ReceiveMessage(socket);
 				} catch (Exception e) {
 					System.out.println("openChattingRoom exception");
@@ -123,22 +121,31 @@ public class ChatController implements Initializable{
 					// message : in#currentNum#nick#입장#memArray
 					Platform.runLater(() -> {
 						currentNum_Label.setText(m[1]);
-						printMessage(m[2] + m[3], "");
 						
+						p = new BorderPane();
+						Label entryMessage = new Label(m[2] + m[3]);
+						entryMessage.setFont(new Font("gulim", 15));
+						p.setCenter(entryMessage);
+			        	chat_list.getItems().add(p);
+			        	
+						BorderPane bp;
+						Label mem = null;
 						//member_list 추가
 						if ( m[4].charAt(0) == '[' ) {
 							m[4] = m[4].substring(1, m[4].length() - 1);
 							String[] memArray = m[4].split(", ");
 							for (int i = memArray.length - 1; i >= 0; i--) {
-								BorderPane bp = new BorderPane();
-								Label mem = new Label(memArray[i]);
+								bp = new BorderPane();
+								mem = new Label(memArray[i]);
+					        	mem.setFont(new Font("gulim", 15));
 								mem.setUserData(memArray[i]);
 								bp.setLeft(mem);
 								member_list.getItems().add(bp);
 							}
 						} else {
-							BorderPane bp = new BorderPane();
-							Label mem = new Label(m[4]);
+							bp = new BorderPane();
+							mem = new Label(m[4]);
+				        	mem.setFont(new Font("gulim", 15));
 							mem.setUserData(m[4]);
 							bp.setLeft(mem);
 							member_list.getItems().add(bp);
@@ -150,14 +157,13 @@ public class ChatController implements Initializable{
 						printMessage(m[2] + m[3], "");
 						for (int i = 0; i < member_list.getItems().size(); i++ ) {
 							if ( m[2].equals(member_list.getItems().get(i).getLeft().getUserData()) ){
-								System.out.println(nick + " : remove : " + m[2]);
 								member_list.getItems().remove(i);
 								break;
 							}
 						}
 					});
 				} else if (m[0].equals("closeChattingSocket")) {
-					Stage tmp = (Stage) exitBtnComponent.getScene().getWindow();
+					Stage tmp = (Stage) chat_list.getScene().getWindow();
 					Platform.runLater(() -> {
 						tmp.close();
 					});
@@ -224,26 +230,70 @@ public class ChatController implements Initializable{
 	}
 
 	public void printMessage(String name, String text) {
-		p = new BorderPane();
-    	u = new BorderPane();
-    	d = new BorderPane();
-		this.name = new Label(name);
-		this.text = new Label(text);
-		u.setLeft(this.name);
-		d.setLeft(this.text);
-		p.setTop(u);
-		p.setBottom(d);
-		chat_list.getItems().add(p);
-	}
-	
-	@FXML
-	public void exit_btn() throws IOException {
-		closeChattingRoom();
-	}
-	
-	@FXML
-	public void change_btn() {
-		// 닉네임 변경 버튼
-		System.out.println("잉");
+		// 줄바꿈 추가 코드
+		StringBuffer mes = new StringBuffer();
+		mes.append(text);
+		int maxwidthlen = 30;
+		for (int i = 1; i <= text.length() / maxwidthlen; i++) {
+			mes.insert(i * maxwidthlen - 1, "\n");
+		}
+		
+		// 시간 추가 코드
+		LocalDateTime ldt = LocalDateTime.now();
+		String hour;
+		if (ldt.getHour() / 12 > 0) {
+			hour = "오후" + Integer.toString(ldt.getHour() % 12);
+		} else {
+			hour = "오전" + Integer.toString(ldt.getHour());
+		}
+		String minute;
+		if ((minute = Integer.toString(ldt.getMinute())).length() == 1) {
+			minute = "0" + minute;
+		}
+		String time = hour + " : " + minute;
+		Label currentTime = new Label(time);
+		currentTime.setFont(new Font("gulim", 10));
+		
+		
+		// 채팅 리스트에 붙이기 코드
+		if (name.equals("")) {
+	    	p = new BorderPane();
+	    	subp = new BorderPane();
+	    	subp2 = new BorderPane();
+			
+	    	this.text = new Label(mes.toString());
+	    	this.text.setFont(new Font("gulim", 15));
+			currentTime.setText(currentTime.getText() + "        ");
+
+			subp2.setBottom(currentTime);
+
+			subp.setLeft(subp2);
+			subp.setRight(this.text);
+        	
+        	p.setRight(subp);
+        	chat_text.setText("");
+        	chat_list.getItems().add(p);
+		} else {
+			p = new BorderPane();
+			subp = new BorderPane();
+	    	subp2 = new BorderPane();
+			u = new BorderPane();
+			d = new BorderPane();
+			this.name = new Label(name);
+			this.text = new Label(mes.toString());
+			this.text.setFont(new Font("gulim", 15));
+			currentTime.setText("        " + currentTime.getText());
+
+			subp2.setBottom(currentTime);
+			subp.setLeft(subp2);
+			
+			u.setLeft(this.name);
+			d.setLeft(this.text);
+			d.setCenter(subp);
+			
+			p.setTop(u);
+			p.setBottom(d);
+			chat_list.getItems().add(p);
+		}
 	}
 }

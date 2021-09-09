@@ -55,6 +55,7 @@ public class LogController implements Initializable {
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		try {
+			login_id.requestFocus();
 			login_id.setOnKeyPressed((EventHandler<? super KeyEvent>) new EventHandler<KeyEvent>() {
 				@Override
 				public void handle(KeyEvent t) {

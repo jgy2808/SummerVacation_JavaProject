@@ -56,7 +56,7 @@ public class ConsoleChatServer extends Thread{
 				System.out.println("server message : " + sock.getPort() + " : " + message);
 				
 				if (message.split("#")[0].equals("closeChattingSocket")) {
-					System.out.println("closeChattingSocket : " + message);
+//					System.out.println("closeChattingSocket : " + message);
 					
 					for (Socket s : room.get(rNum).keySet()) {
 						System.out.print(s.getPort() + ", ");
@@ -76,11 +76,11 @@ public class ConsoleChatServer extends Thread{
 					toClient = sock.getOutputStream();
 					buf = message.getBytes("UTF-8");
 					count = buf.length;
-					System.out.println("buf = " + new String(buf, 0, count, "UTF-8"));
+//					System.out.println("buf = " + new String(buf, 0, count, "UTF-8"));
 					toClient.write(buf, 0, count);
 					toClient.flush();
 					
-					System.out.println(sock.getPort() + " : " + "server openChatServer : closeChattingSocket end");
+//					System.out.println(sock.getPort() + " : " + "server openChatServer : closeChattingSocket end");
 					// 접속 후 나가버린 클라이언트인 경우 ArrayList에서 제거
 					break;
 				} else {
@@ -96,7 +96,7 @@ public class ConsoleChatServer extends Thread{
 			}
 			fromClient.close();
 			toClient.close();
-			System.out.println(sock.getPort() + " : " + "server openChatServer while end");
+//			System.out.println(sock.getPort() + " : " + "server openChatServer while end");
 			Remove_client(sock, rNum);
 			sock.close();
 		} catch(IOException ex) {

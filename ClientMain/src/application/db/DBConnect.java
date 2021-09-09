@@ -37,7 +37,7 @@ public class DBConnect {
 			Class.forName(driver);
 			conn = DriverManager.getConnection(url, user, password);
 			
-			System.out.println("database connection Success.!!");
+//			System.out.println("database connection Success.!!");
 		} catch (ClassNotFoundException e1) {
 			e1.printStackTrace(); // database driver class Not load
 			try { conn.close(); } 
@@ -200,7 +200,6 @@ public class DBConnect {
 	}
 	
 	public void ExitRoom(int roomcode) {
-		System.out.println("exitroom method on");
 		PreparedStatement ps = null;
 		String sql = "update roominfo set CurrentNum = CurrentNum - 1 where Roomcode = ?;";
 		try {
@@ -217,7 +216,6 @@ public class DBConnect {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("exitroom method off");
 	}
 	
 	public int signup(String e, String i, String p) { // e = Email, i = id ,p = password

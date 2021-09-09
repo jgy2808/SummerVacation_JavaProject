@@ -66,13 +66,6 @@ public class WaitController implements Initializable {
 	int checkSearch = 0;
 	int roomCode = 0;
 	
-	
-	// chattingscene method variable
-	FXMLLoader f;
-	Parent r;
-	Stage stage2;
-	
-	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
@@ -144,7 +137,10 @@ public class WaitController implements Initializable {
 	// 닉네임 교체 버튼
 	@FXML
 	private void changebtnOnAction(ActionEvent event) {
-		
+		dc.connect();
+		dc.testDelete();
+		dc.close();
+		RefreshRoomList();
 	}
 	
 	// 새로고침 버튼
@@ -235,7 +231,7 @@ public class WaitController implements Initializable {
 				pane.setRight(pane2);
 
 				roomList.getItems().add(pane);
-				btn.setOnAction(event2 -> {
+				btn.setOnAction(event -> {
 					if (nick_text.getText().equals("")) {
 						Alert alert = new Alert(AlertType.WARNING);
 						alert.setTitle("Warning");
@@ -298,14 +294,12 @@ public class WaitController implements Initializable {
 	
 	public void chattingScene(String code, String title, String nick, String maxNum) {
 		try {
-			f = new FXMLLoader(getClass().getResource("chat.fxml"));
-			r = (Parent) f.load();
-
-			c3 = new ChatController();
-			c3 = f.getController();
+			FXMLLoader f = new FXMLLoader(getClass().getResource("chat.fxml"));
+			Parent r = (Parent) f.load();
+			ChatController c3 = f.getController();
 			c3.DataInit(code, title, nick, maxNum);
-
-			stage2 = new Stage();
+			
+			Stage stage2 = new Stage();
 			stage2.setScene(new Scene(r));
 			stage2.setTitle("Summer Vacation Project : " + title);
 			stage2.setOnCloseRequest(event -> c3.closeChattingRoom());
@@ -315,6 +309,10 @@ public class WaitController implements Initializable {
 			System.out.println(ex);
 			ex.printStackTrace();
 		}
+	}
+	
+	public void closeStage(Stage stage) {
+		
 	}
 }
 // main1 컨트롤러 달기, 리스트뷰 이름 정하기, 버튼에 함수 달기
