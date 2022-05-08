@@ -110,12 +110,13 @@ public class WaitController implements Initializable {
 	// ----------------- 방만들기 버튼 -----------------------
 	@FXML
 	private void testFunc(ActionEvent event) {
-		if (title_text.getText().equals("") || nick_text.getText().equals("") || members_text.getText().equals("") || 
-				(members_text.getText().charAt(0) < '2' || members_text.getText().charAt(0) > '9')) {
+		if (title_text.getText().equals("") || nick_text.getText().equals("") || 
+				( members_text.getText().equals("") && members_text.getText().length() < 2 ) ||
+				!Character.isDigit(members_text.getText().charAt(0)) ) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Warning");
 			alert.setHeaderText("방만들기를 할 수 없습니다.");
-			alert.setContentText("방 정보를 모두 입력해주세요!");
+			alert.setContentText("방 정보를 올바르게 입력해주세요!");
 
 			alert.showAndWait();
 			return ;
