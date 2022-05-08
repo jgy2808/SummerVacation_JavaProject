@@ -266,6 +266,7 @@ public class ChatController implements Initializable{
 			
 	    	this.text = new Label(mes.toString());
 	    	this.text.setFont(new Font("gulim", 15));
+	    	this.text.setStyle("-fx-background-color : #3DB2FF; -fx-background-radius : 10 10; -fx-padding : 8px;");
 			currentTime.setText(currentTime.getText() + "        ");
 
 
@@ -281,6 +282,7 @@ public class ChatController implements Initializable{
 			this.name = new Label(name);
 			this.text = new Label(mes.toString());
 			this.text.setFont(new Font("gulim", 15));
+	    	this.text.setStyle("-fx-background-color : #FFEDDA; -fx-background-radius : 10 10 0 0; -fx-padding : 8px;");
 			currentTime.setText("        " + currentTime.getText());
 
 			subp.setLeft(subp2);
